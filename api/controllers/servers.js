@@ -12,9 +12,10 @@ exports.registerServers = function () {
           if (err) {
             console.error(err)
           } else {
-            res.header('Content-Type', 'application/json; charset=utf-8')
+            //res.header('Content-Type', 'application/json; charset=utf-8')
             res.status(201)
-            res.write(JSON.stringify(docs.ops))
+            //res.write(JSON.stringify(docs.ops))
+            res.write(docs.ops.length + " servers created")
             res.send()
           }
         })
