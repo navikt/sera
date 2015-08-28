@@ -32,8 +32,7 @@ test('POST /api/v1/servers', function (t) {
         disk: 100,
         memory: '16'
       }
-    ]
-  ).end(function (err, res) {
+    ]).end(function (err, res) {
     t.equals(res.status, 201, 'successfully creating servers yields http 201')
     t.equals(res.text, '2 servers created', 'when creating servers, it says how many')
     t.end()
@@ -62,11 +61,11 @@ test('GET /api/v1/servers/:hostname', function (t) {
 })
 
 test('GET /api/v1/servers/:hostname (nonexistent)', function (t) {
- request(api)
-   .get('/api/v1/servers/doesntexist')
-   .end(function (err, res) {
-     t.equals(res.status, 404, 'retrieving nonexistent server yields 404')
-     mongoose.connection.close()
-     t.end()
-   })
+  request(api)
+    .get('/api/v1/servers/doesntexist')
+    .end(function (err, res) {
+      t.equals(res.status, 404, 'retrieving nonexistent server yields 404')
+      mongoose.connection.close()
+      t.end()
+    })
 })
