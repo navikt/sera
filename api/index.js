@@ -25,10 +25,8 @@ var errorHandler = function (err, req, res, next) {
 app.use(logError);
 app.use(errorHandler);
 
-var users = ['a', 'b', 'c']
-
-//mongoose.connect(config.dbUrl);
-//mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
-//console.log("Using MongoDB URL", config.dbUrl);
+mongoose.connect(config.dbUrl);
+mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
+console.log("Using MongoDB URL", config.dbUrl);
 
 module.exports = app;
