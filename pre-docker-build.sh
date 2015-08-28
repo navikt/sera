@@ -1,6 +1,6 @@
 #!/bin/bash
 
-### prepares a docker directory for build
+#prepares a docker directory for build
 
 BASEDIR=$(dirname $0)
 DOCKERDIR=$BASEDIR/docker
