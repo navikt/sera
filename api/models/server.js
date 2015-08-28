@@ -12,7 +12,8 @@ Server.model = mongoose.model('Server', mongoose.Schema({
     owner: {type: String},
     cpu: {type: Number},
     disk: {type: Number},
-    memory: {type: Number}
+    memory: {type: Number},
+    notes: {type: String}
 }))
 
 Server.create = function (obj) {
@@ -26,7 +27,8 @@ Server.create = function (obj) {
         type: obj.type,
         cpu: obj.cpu,
         disk: obj.disk,
-        memory: obj.memory
+        memory: obj.memory,
+        notes: obj.notes
     }
 }
 

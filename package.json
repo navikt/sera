@@ -11,6 +11,9 @@
     "name": "Johnny Horvi",
     "email": "johnny.horvi@nav.no"
   },
+  "scripts":{
+    "test": "node test | tap-spec"
+  },
   "engines": {
     "node": ">= 0.12.7"
   },
@@ -23,6 +26,10 @@
     "morgan": "^1.6.1"
   },
   "devDependencies": {
-    "frisby": "^0.8.5"
+    "frisby": "^0.8.5",
+    "jasmine-node": "^1.14.5",
+    "supertest": "^1.1.0",
+    "tap-spec": "^4.1.0",
+    "tape": "^4.2.0"
   }
 }
