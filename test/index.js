@@ -22,9 +22,9 @@ test('GET /api/v1/servers', function (t) {
         .end(function (err, res) {
             t.equals(res.status, 200, 'successfully retrieving server yields http 200')
             if (res.body.length >= 2){
-                t.ok('okok', 'ok')
+                t.ok('','returns expected server count')
             } else {
-                t.fail('blaeh')
+                t.fail('does not return expected server count')
             }
             t.end()
         })
