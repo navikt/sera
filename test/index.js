@@ -42,10 +42,10 @@ test('DELETE /api/v1/servers?hostname=:hostname', function (t) {
 
 test('GET /api/v1/servers', function (t) {
     request(api)
-        .get('/api/v1/servers?hostname=a01apvl069.devillo.central')
+        .get('/api/v1/servers?hostname=a01apvl069.devillo')
         .end(function (err, res) {
             t.equals(res.status, 200, 'successfully retrieving servers yields http 200')
-            t.equals(res.body.length, 1, 'returns requested server by hostname')
+            t.equals(res.body.length, 1, 'returns requested server by partial hostname')
             t.end()
         })
 })

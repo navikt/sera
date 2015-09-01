@@ -18,7 +18,7 @@ exports.registerServers = function () {
 
 exports.getServers = function () {
     return function (req, res, next) {
-        Server.model.find({hostname: req.query.hostname}, function (err, docs) {
+        Server.model.find(createMongoQueryFromRequest(req.query), function (err, docs) {
             if (err) {
                 return next(err)
             } else if (docs.length === 0) {
@@ -44,6 +44,16 @@ exports.deleteServers = function () {
             }
         })
     }
+}
+
+var createMongoQueryFromRequest = function(request){
+    var query = {}
+
+    for (var queryParam in request) {
+        query[queryParam] = new RegExp(request[queryParam], 'i')
+    }
+
+    return query
 }
 
 var createServerObjects = function (objects) {
