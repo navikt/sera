@@ -21,7 +21,7 @@ test('GET /api/v1/servers', function (t) {
         .get('/api/v1/servers')
         .end(function (err, res) {
             t.equals(res.status, 200, 'successfully retrieving server yields http 200')
-            t.ok(res.body.length >= 2, 'returns expected server count')
+            t.true(res.body.length >= 2, 'returns expected server count')
             t.end()
         })
 })
