@@ -14,7 +14,8 @@ var serverSchema = mongoose.Schema({
     disk: {type: Number},
     memory: {type: Number},
     notes: {type: String},
-    os: {type: String}
+    os: {type: String},
+    site: {type: String}
 });
 
 serverSchema.set('toJSON', {
@@ -38,7 +39,8 @@ Server.create = function (obj) {
         disk: obj.disk,
         memory: obj.memory,
         notes: obj.notes,
-        os: obj.os
+        os: obj.os,
+        site: obj.site
     }
 }
 

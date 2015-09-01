@@ -87,6 +87,7 @@ var createServerPayload = function (hostnames) {
             memory: 16,
             type: 'was',
             os: 'rhel',
+            site: 'so8',
             disk: 100,
             environmentClass: 'p'
         }
