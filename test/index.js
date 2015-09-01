@@ -5,7 +5,6 @@ var request = require('supertest')
 var api = require('../api')
 var mongoose = require('mongoose')
 
-
 test('POST /api/v1/servers', function (t) {
     request(api)
         .post('/api/v1/servers')
@@ -22,6 +21,7 @@ test('GET /api/v1/servers', function (t) {
         .end(function (err, res) {
             t.equals(res.status, 200, 'successfully retrieving server yields http 200')
             t.true(res.body.length >= 2, 'returns expected server count')
+            t.false(res.body[0]._id, 'server object has no _id field')
             t.end()
         })
 })

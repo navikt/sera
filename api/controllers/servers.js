@@ -9,8 +9,7 @@ exports.registerServers = function () {
                 return next(err)
             } else {
                 res.status(201)
-                res.write(docs.ops.length + ' servers created')
-                res.send()
+                res.send(docs.ops.length + ' servers created')
             }
         })
     }
@@ -23,8 +22,7 @@ exports.getServers = function () {
                 return next(err)
             } else {
                 res.header('Content-Type', 'application/json; charset=utf-8')
-                res.status(200)
-                res.send(JSON.stringify(docs))
+                res.json(docs)
             }
         })
     }
@@ -44,7 +42,7 @@ exports.deleteServers = function () {
     }
 }
 
-var createMongoQueryFromRequest = function(request){
+var createMongoQueryFromRequest = function (request) {
     var numbers = ['cpu', 'disk', 'memory']
     var query = {}
 

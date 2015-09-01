@@ -2,7 +2,7 @@ var mongoose = require('mongoose')
 
 var Server = {}
 
-Server.model = mongoose.model('Server', mongoose.Schema({
+var serverSchema = mongoose.Schema({
     hostname: {type: String},
     ipAddress: {type: String},
     environment: {type: String},
@@ -15,7 +15,15 @@ Server.model = mongoose.model('Server', mongoose.Schema({
     memory: {type: Number},
     notes: {type: String},
     os: {type: String}
-}))
+});
+
+serverSchema.set('toJSON', {
+    transform: function (doc, ret, options) {
+        delete ret._id;
+    }
+});
+
+Server.model = mongoose.model('Server', serverSchema)
 
 Server.create = function (obj) {
     return {
