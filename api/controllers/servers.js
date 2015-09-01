@@ -45,10 +45,15 @@ exports.deleteServers = function () {
 }
 
 var createMongoQueryFromRequest = function(request){
+    var numbers = ['cpu', 'disk', 'memory']
     var query = {}
 
     for (var queryParam in request) {
-        query[queryParam] = new RegExp(request[queryParam], 'i')
+        if (numbers.indexOf(queryParam) > -1) { // if numeric value we do exact match
+            query[queryParam] = request[queryParam]
+        } else {
+            query[queryParam] = new RegExp(request[queryParam], 'i')
+        }
     }
 
     return query
