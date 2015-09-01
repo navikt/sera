@@ -21,11 +21,7 @@ test('GET /api/v1/servers', function (t) {
         .get('/api/v1/servers')
         .end(function (err, res) {
             t.equals(res.status, 200, 'successfully retrieving server yields http 200')
-            if (res.body.length >= 2){
-                t.ok('','returns expected server count')
-            } else {
-                t.fail('does not return expected server count')
-            }
+            t.ok(res.body.length >= 2, 'returns expected server count')
             t.end()
         })
 })
@@ -79,7 +75,7 @@ test('DELETE /api/v1/servers', function (t) {
 })
 
 var createServerPayload = function (hostnames) {
-   return hostnames.map(function (hostname) {
+    return hostnames.map(function (hostname) {
         return {
             hostname: hostname,
             ipAddress: '10.0.69.96',
