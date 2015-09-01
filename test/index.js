@@ -34,7 +34,7 @@ test('DELETE /api/v1/servers/:hostname', function (t) {
             request(api)
                 .get('/api/v1/servers?hostname=a01apvl096.devillo.central')
                 .end(function (err, res) {
-                    t.equals(res.status, 404, 'deletes single server')
+                    t.equals(res.body.length, 0, 'deletes single server')
                     t.end()
                 })
         })
@@ -50,11 +50,12 @@ test('GET /api/v1/servers', function (t) {
         })
 })
 
-test('GET /api/v1/servers?hostname=<hostname> (nonexistent)', function (t) {
+test('GET /api/v1/servers?hostname=blabla (nonexistent)', function (t) {
     request(api)
-        .get('/api/v1/servers?hostname=doesntexist')
+        .get('/api/v1/servers?hostname=blabla')
         .end(function (err, res) {
-            t.equals(res.status, 404, 'retrieving nonexistent server yields 404')
+            t.equals(res.status, 200, 'retrieving nonexistent server yields 200')
+            t.equals(res.body.length, 0, 'no servers found gives empty array')
             t.end()
         })
 })
@@ -67,7 +68,7 @@ test('DELETE /api/v1/servers', function (t) {
             request(api)
                 .get('/api/v1/servers')
                 .end(function (err, res) {
-                    t.equals(res.status, 404, 'successfully removed all servers')
+                    t.equals(res.body.length, 0, 'successfully removed all servers')
                     mongoose.connection.close()
                     t.end()
                 })
@@ -90,5 +91,4 @@ var createServerPayload = function (hostnames) {
             environmentClass: 'p'
         }
     })
-
 }

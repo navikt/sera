@@ -21,9 +21,6 @@ exports.getServers = function () {
         Server.model.find(createMongoQueryFromRequest(req.query), function (err, docs) {
             if (err) {
                 return next(err)
-            } else if (docs.length === 0) {
-                res.status(404)
-                res.send()
             } else {
                 res.header('Content-Type', 'application/json; charset=utf-8')
                 res.status(200)
