@@ -5,7 +5,7 @@ var morgan = require('morgan')
 var mongoose = require('mongoose')
 var config = require('./config/config')
 
-app.use(bodyParser.json())
+app.use(bodyParser.json({type: '*/*'}))
 app.use(morgan('combined'))
 require('./config/routes')(app)
 app.set('port', config.port)

@@ -26,9 +26,9 @@ test('GET /api/v1/servers', function (t) {
         })
 })
 
-test('DELETE /api/v1/servers?hostname=:hostname', function (t) {
+test('DELETE /api/v1/servers/:hostname', function (t) {
     request(api)
-        .delete('/api/v1/servers?hostname=a01apvl096.devillo.central')
+        .delete('/api/v1/servers/a01apvl096.devillo.central')
         .end(function (err, res) {
             t.equals(res.status, 204, 'successfully performed delete operation yields 204')
             request(api)

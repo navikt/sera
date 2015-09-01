@@ -35,8 +35,9 @@ exports.getServers = function () {
 
 exports.deleteServers = function () {
     return function (req, res, next) {
-        var hostname = req.query.hostname;
-        Server.model.remove({hostname: hostname}, function (err) {
+        var query = (req.params.hostname) ? {hostname: req.params.hostname} : {}
+
+        Server.model.remove(query, function (err) {
             if (err) {
                 return next(err)
             } else {
