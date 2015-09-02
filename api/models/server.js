@@ -15,7 +15,9 @@ var serverSchema = mongoose.Schema({
     memory: {type: Number},
     notes: {type: String},
     os: {type: String},
-    site: {type: String}
+    site: {type: String},
+    custom: {type: Boolean},
+    srm: {type: Boolean}
 });
 
 serverSchema.set('toJSON', {
@@ -40,7 +42,9 @@ Server.create = function (obj) {
         memory: obj.memory,
         notes: obj.notes,
         os: obj.os,
-        site: obj.site
+        site: obj.site,
+        custom: obj.custom,
+        srm: obj.srm
     }
 }
 

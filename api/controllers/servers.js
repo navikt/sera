@@ -1,4 +1,6 @@
 var Server = require('../models/server')
+var _ = require('lodash')
+var calculateServerCost = require('./costcalculator')
 
 exports.registerServers = function () {
     return function (req, res, next) {
@@ -22,7 +24,7 @@ exports.getServers = function () {
                 return next(err)
             } else {
                 res.header('Content-Type', 'application/json; charset=utf-8')
-                res.json(docs)
+                res.json(enrichWithCost(docs))
             }
         })
     }
@@ -61,4 +63,12 @@ var createServerObjects = function (objects) {
     return objects.map(function (obj) {
         return Server.create(obj)
     })
+}
+
+
+var enrichWithCost = function (docs) {
+    docs = JSON.parse(JSON.stringify(docs))
+    var docsWithCost = docs.map(calculateServerCost)
+
+    return docsWithCost
 }
