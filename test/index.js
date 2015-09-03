@@ -90,6 +90,8 @@ var createServerPayload = function (hostnames) {
             os: 'RHEL',
             site: 'SO8',
             disk: 100,
+            srm: false,
+            custom: true,
             environmentClass: 'P'
         }
     })

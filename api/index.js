@@ -5,7 +5,7 @@ var morgan = require('morgan')
 var mongoose = require('mongoose')
 var config = require('./config/config')
 
-app.use(bodyParser.json({type: '*/*'}))
+app.use(bodyParser.json({type: '*/*', limit: '50mb'}))
 app.use(morgan('combined'))
 require('./config/routes')(app)
 app.set('port', config.port)
@@ -17,7 +17,7 @@ var logError = function (err, req, res, next) {
 
 var errorHandler = function (err, req, res, next) {
   res.send({
-    status: res.statusCode,
+    status: 500,
     message: err.message || 'internal error'
   })
 }
