@@ -1,8 +1,9 @@
 var mongoose = require('mongoose')
+var _ = require('lodash')
 
 var Server = {}
 
-var serverSchema = mongoose.Schema({
+var serverDefinition = {
     hostname: {type: String},
     ipAddress: {type: String},
     environment: {type: String},
@@ -18,7 +19,9 @@ var serverSchema = mongoose.Schema({
     site: {type: String},
     custom: {type: Boolean},
     srm: {type: Boolean}
-});
+}
+
+var serverSchema = mongoose.Schema(serverDefinition);
 
 serverSchema.set('toJSON', {
     transform: function (doc, ret, options) {
@@ -28,24 +31,18 @@ serverSchema.set('toJSON', {
 
 Server.model = mongoose.model('Server', serverSchema)
 
-Server.create = function (obj) {
-    return {
-        hostname: obj.hostname,
-        ipAddress: obj.ipAddress,
-        environment: obj.environment,
-        environmentClass: obj.environmentClass,
-        application: obj.application,
-        owner: obj.owner,
-        type: obj.type,
-        cpu: obj.cpu,
-        disk: obj.disk,
-        memory: obj.memory,
-        notes: obj.notes,
-        os: obj.os,
-        site: obj.site,
-        custom: obj.custom,
-        srm: obj.srm
-    }
+Server.create = function (object) {
+    var server = {}
+    _.forIn(serverDefinition, function (value, key) {
+        var incomingValue = object[key]
+        if (incomingValue){
+            if (serverDefinition[key].type === String){
+                incomingValue = incomingValue.toLowerCase()
+            }
+            server[key] = incomingValue
+        }
+    })
+    return server
 }
 
 module.exports = Server

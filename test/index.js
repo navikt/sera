@@ -46,6 +46,7 @@ test('GET /api/v1/servers', function (t) {
         .end(function (err, res) {
             t.equals(res.status, 200, 'successfully retrieving servers yields http 200')
             t.equals(res.body.length, 1, 'returns requested server by partial hostname')
+            t.equals(res.body[0].os, 'rhel', 'string-input is loweroquaied')
             t.end()
         })
 })
@@ -80,16 +81,16 @@ var createServerPayload = function (hostnames) {
         return {
             hostname: hostname,
             ipAddress: '10.0.69.96',
-            owner: 'johan yumyum',
-            application: 'sera',
-            environment: 'dev',
+            owner: 'jOhAN yUmYuM',
+            application: 'SERA',
+            environment: 'DEV',
             cpu: 2,
             memory: 16,
-            type: 'was',
-            os: 'rhel',
-            site: 'so8',
+            type: 'WAS',
+            os: 'RHEL',
+            site: 'SO8',
             disk: 100,
-            environmentClass: 'p'
+            environmentClass: 'P'
         }
     })
 }
