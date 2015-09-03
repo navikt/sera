@@ -46,7 +46,7 @@ var calcITCAMCost = function (type, environment) {
 }
 
 var summarize = function (total, num) {
-    return total + num
+    return isNaN(num) ? total : total + num
 };
 
 var calculateCost = function (vm) {
