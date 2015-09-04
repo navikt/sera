@@ -87,12 +87,12 @@ var createServerPayload = function (hostnames) {
             cpu: 2,
             memory: 16,
             type: 'WAS',
-            os: 'RHEL',
-            site: 'SO8',
+            os: 'rhel',
+            site: 'so8',
             disk: 100,
             srm: false,
             custom: true,
-            environmentClass: 'P'
+            environmentClass: 'p'
         }
     })
 }
