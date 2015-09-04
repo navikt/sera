@@ -1,9 +1,7 @@
 var _ = require('lodash')
 var jsonToCSV = require('json-csv');
-
 var ServerDefinition = require('../models/server')
 var ServerMongoModel = require('../models/servermongo')
-
 var calculateServerCost = require('./costcalculator')
 
 exports.registerServers = function () {
