@@ -9,7 +9,7 @@ test('POST /api/v1/servers', function (t) {
     request(api)
         .post('/api/v1/servers')
         .send(createServerPayload(['a01apvl069.devillo.central', 'a01apvl096.devillo.central'])).end(function (err, res) {
-            t.equals(res.status, 1201, 'successfully creating servers yields http 201')
+            t.equals(res.status, 201, 'successfully creating servers yields http 201')
             t.equals(res.text, '2 servers created', 'when creating servers, it says how many')
             t.end()
         })
