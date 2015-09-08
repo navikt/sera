@@ -1,22 +1,22 @@
 var mongoose = require('mongoose')
-var serverDefinition = require('./server')
 
-var createMongoSchemaDefinitionFrom = function (serverDefinition) {
-  var mongoSchema = {}
-
-  for (var key in serverDefinition) {
-    mongoSchema[key] = {type: serverDefinition[key].type}
-  }
-
-  return new mongoose.Schema(mongoSchema)
-}
-
-var mongoServerSchema = createMongoSchemaDefinitionFrom(serverDefinition)
-
-mongoServerSchema.set('toJSON', {
-  transform: function (doc, ret, options) {
-    delete ret._id
-  }
+var unitSchema = new mongoose.Schema({
+    name: String,
+    applications: [String]
 })
 
-module.exports = mongoose.model('Server', mongoServerSchema)
+unitSchema.set('toJSON', {
+    transform: function (doc, ret, options) {
+        delete ret._id
+        delete ret.__v
+    }
+})
+
+unitSchema.statics.createFromObject = function (obj) {
+    return new Unit({
+        name: obj.name,
+        applications: obj.applications
+    });
+}
+
+module.exports = Unit = mongoose.model('Unit', unitSchema)

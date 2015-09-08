@@ -4,11 +4,18 @@ var test = require('tape')
 var request = require('supertest')
 var api = require('../api')
 var mongoose = require('mongoose')
+var Server = require('../api/models/servermongo')
+
+Server.remove({}, function (err) {
+    if (err) throw Error(err)
+    console.log("deleted all servers");
+})
 
 test('POST /api/v1/servers', function (t) {
     request(api)
         .post('/api/v1/servers')
-        .send(createServerPayload(['a01apvl069.devillo.central', 'a01apvl096.devillo.central'])).end(function (err, res) {
+        .send(createServerPayload(['a01apvl069.devillo.central', 'a01apvl096.devillo.central']))
+        .end(function (err, res) {
             t.equals(res.status, 201, 'successfully creating servers yields http 201')
             t.equals(res.text, '2 servers created', 'when creating servers, it says how many')
             t.end()
@@ -20,7 +27,7 @@ test('GET /api/v1/servers', function (t) {
         .get('/api/v1/servers')
         .end(function (err, res) {
             t.equals(res.status, 200, 'successfully retrieving server yields http 200')
-            t.true(res.body.length >= 2, 'returns expected server count')
+            t.equals(res.body.length, 2, 'returns expected server count')
             t.false(res.body[0]._id, 'server object has no _id field')
             t.end()
         })
@@ -40,7 +47,7 @@ test('DELETE /api/v1/servers/:hostname', function (t) {
         })
 })
 
-test('GET /api/v1/servers', function (t) {
+test('GET /api/v1/servers?hostname=:hostname single', function (t) {
     request(api)
         .get('/api/v1/servers?hostname=a01apvl069.devillo')
         .end(function (err, res) {
@@ -48,6 +55,26 @@ test('GET /api/v1/servers', function (t) {
             t.equals(res.body.length, 1, 'returns requested server by partial hostname')
             t.equals(res.body[0].os, 'rhel', 'string-input is loweroquaied')
             t.end()
+        })
+})
+
+test('GET servers, PUT unit, GET servers', function (t) {
+    request(api)
+        .get('/api/v1/servers?hostname=a01apvl069.devillo')
+        .end(function (err, res) {
+            t.equals(res.body[0].unit, undefined, 'unit is not returned for server when application is not in any unit')
+            request(api)
+                .put('/api/v1/units/aura')
+                .send({name: "aura", applications: ['sera']})
+                .end(function (err, res) {
+                    request(api)
+                        .get('/api/v1/servers?hostname=a01apvl069.devillo')
+                        .end(function (err, res) {
+                            t.equals(res.body[0].unit, 'aura', 'unit is returned for server when application is in unit')
+                            t.end()
+                        })
+                })
+
         })
 })
 
@@ -70,7 +97,6 @@ test('DELETE /api/v1/servers', function (t) {
                 .get('/api/v1/servers')
                 .end(function (err, res) {
                     t.equals(res.body.length, 0, 'successfully removed all servers')
-                    mongoose.connection.close()
                     t.end()
                 })
         })

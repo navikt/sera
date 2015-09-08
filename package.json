@@ -1,7 +1,7 @@
 {
   "name": "sera",
   "description": "server information application",
-  "version": "23.0.0",
+  "version": "53.0.0",
   "url": "http://sera.adeo.no",
   "repository": {
     "type": "git",
@@ -12,7 +12,7 @@
     "email": "johnny.horvi@nav.no"
   },
   "scripts": {
-    "test": "node test | tap-spec"
+    "test": "tape test/*.js | tap-spec"
   },
   "engines": {
     "node": ">= 0.12.7"

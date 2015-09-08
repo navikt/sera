@@ -8,7 +8,7 @@ var createMongoSchemaDefinitionFrom = function (serverDefinition) {
     mongoSchema[key] = {type: serverDefinition[key].type}
   }
 
-  return new mongoose.Schema(mongoSchema)
+  return mongoose.Schema(mongoSchema)
 }
 
 var mongoServerSchema = createMongoSchemaDefinitionFrom(serverDefinition)
