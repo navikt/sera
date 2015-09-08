@@ -11,6 +11,4 @@ module.exports = function (app) {
     app.get('/api/v1/units/:unitid', units.getUnits())
     app.put('/api/v1/units/:unitid', units.createUnit())
     app.delete('/api/v1/units/:unitid', units.deleteUnit())
-    //app.get('/test', units.test())
-
 }
