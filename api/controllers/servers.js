@@ -4,6 +4,7 @@ var ServerDefinition = require('../models/server')
 var ServerMongoModel = require('../models/servermongo')
 var calculateServerCost = require('./costcalculator')
 
+
 exports.registerServers = function () {
     return function (req, res, next) {
         var body = validateRequest(req.body)
@@ -37,7 +38,6 @@ exports.getServers = function () {
                     res.json(serversWithCostAndUnit)
                 }
             })
-
         })
     }
 }

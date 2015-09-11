@@ -54,13 +54,13 @@ var summarize = function (total, num) {
 
 var calculateCost = function (vm) {
     var cpu = 470 * vm.cpu
-    var memory = 466 * vm.memory
+    var memory = 280 * vm.memory
     var disk = 32 * vm.disk
     var os = calcOsCost(vm.os, vm.environmentClass)
     var mw = calcMWCost(vm.type, vm.environmentClass)
     var baseCost = calcBaseCost(vm.os)
     var itcam = calcITCAMCost(vm.type, vm.environment)
-    var puppet = (vm.os === 'rhel') ? 750 : 0
+    var puppet = (vm.os === 'rhel' && vm.environmentClass === 'p') ? 750 : 0
     var custom = (vm.custom === true) ? 5000 : 0
 
     var cost = {
@@ -75,6 +75,7 @@ var calculateCost = function (vm) {
         custom: custom
     }
 
+    cost.srm = (vm.srm) ? _.values(cost).reduce(summarize, 0) : 0
     cost.total = _.values(cost).reduce(summarize, 0)
 
     for (var key in cost) {
