@@ -4,7 +4,6 @@ var ServerDefinition = require('../models/server')
 var ServerMongoModel = require('../models/servermongo')
 var calculateServerCost = require('./costcalculator')
 
-
 exports.registerServers = function () {
     return function (req, res, next) {
         var body = validateRequest(req.body)
@@ -58,6 +57,8 @@ exports.deleteServers = function () {
 
 var enrichWithUnit = function(servers, units){
     return servers.map(function(server){
+        server['unit'] = '' // always set unit to something, enrich with actual unitname if match is found
+
         var application = server.application;
         if (!application) {
             return server
@@ -68,6 +69,7 @@ var enrichWithUnit = function(servers, units){
                 return server
             }
         })
+
         return server
     });
 }
