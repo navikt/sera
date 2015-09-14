@@ -62,7 +62,7 @@ test('GET servers, PUT unit, GET servers', function (t) {
     request(api)
         .get('/api/v1/servers?hostname=a01apvl069.devillo')
         .end(function (err, res) {
-            t.equals(res.body[0].unit, undefined, 'unit is not returned for server when application is not in any unit')
+            t.equals(res.body[0].unit, '', 'unit is not returned for server when application is not in any unit')
             request(api)
                 .put('/api/v1/units/aura')
                 .send({name: "aura", applications: ['sera']})
