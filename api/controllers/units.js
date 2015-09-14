@@ -2,20 +2,29 @@ var _ = require('lodash')
 var Unit = require('../models/unitmongo')
 
 exports.createUnit = function () {
+    var applicationIsMappedToOtherUnits = function (incomingUnitName, existingUnits) {
+        if (existingUnits.length === 0){ // application doesnt exist in any unit
+            return false
+        } else if (existingUnits.length === 1 && existingUnits[0].name === incomingUnitName){ // we are updating a existing unit
+            return false
+        } else { // some other unit has this application mapped
+            return true
+        }
+    };
+
     return function (req, res, next) {
         var unit = Unit.createFromObject(req.body)
-        Unit.find({applications: {$in: unit.applications}}, function (err, docs) {
+        Unit.find({applications: {$in: unit.applications}}, function (err, units) {
             if (err) return next(err)
-            if (docs.length > 0) {
+            if (applicationIsMappedToOtherUnits(unit.name, units)) {
                 res.status(400)
-                res.send("application(s) already exists in unit(s): " + docs)
+                res.send("application(s) already exists in unit(s): " + units)
             } else {
                 Unit.find({name: unit.name}, function (err, oldUnits) {
                     oldUnits.forEach(remove)
                     unit.save(function (err, unit) {
                         if (err) return next(err)
-                        res.status(201)
-                        res.send(unit)
+                        res.status(201).send(unit)
                     })
                 })
             }
@@ -26,7 +35,6 @@ exports.createUnit = function () {
 exports.getUnits = function () {
     return function (req, res, next) {
         var query = (req.params.unitid) ? {name: req.params.unitid} : {}
-
         Unit.find(query, function (err, units) {
             if (err) return next(err)
 

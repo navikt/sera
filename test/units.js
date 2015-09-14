@@ -18,7 +18,7 @@ Unit.remove({}, function (err) {
 
 test('PUT /api/v1/units/:unitid (create unit)', function (t) {
     request(api)
-        .put('/api/v1/units/myUnit')
+        .put('/api/v1/units/myunit')
         .send({name: "myunit", applications: ['a', 'b', 'c']})
         .end(function (err, res) {
             t.equals(res.status, 201, 'successfully creating a unit yields http 201')
@@ -28,9 +28,10 @@ test('PUT /api/v1/units/:unitid (create unit)', function (t) {
 
 test('PUT /api/v1/units/:unitid (create unit with same id)', function (t) {
     request(api)
-        .put('/api/v1/units/myUnit')
+        .put('/api/v1/units/myunit')
         .send({name: "myunit", applications: ['a', 'x', 'y']})
         .end(function (err, res) {
+            t.equals(res.status, 201, 'overwriting resource yields http 201')
             request(api)
                 .get('/api/v1/units/myunit')
                 .end(function (err, res) {
@@ -45,7 +46,7 @@ test('PUT /api/v1/units/:unitid (create different unit with same application as 
         .put('/api/v1/units/anotherunit')
         .send({name: "anotherunit", applications: ['a']})
         .end(function (err, res) {
-            t.equals(res.status, 400, 'creating a unit with the same application as existing unit is not allowed')
+            t.equals(res.status, 400, 'creating a different unit with the same application as existing unit is not allowed')
             t.end()
         })
 })
