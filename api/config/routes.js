@@ -1,6 +1,7 @@
 module.exports = function (app) {
     var servers = require('../controllers/servers')
     var units = require('../controllers/units')
+    var metrics = require('../controllers/metrics')
 
     app.post('/api/v1/servers', servers.registerServers())
     app.get('/api/v1/servers', servers.getServers())
@@ -10,6 +11,7 @@ module.exports = function (app) {
     app.get('/api/v1/units', units.getUnits())
     app.get('/api/v1/units/:unitid', units.getUnits())
     app.put('/api/v1/units/:unitid', units.createUnit())
-
     app.delete('/api/v1/units/:unitid', units.deleteUnit())
+
+    app.get('/metrics', metrics.getMetrics())
 }

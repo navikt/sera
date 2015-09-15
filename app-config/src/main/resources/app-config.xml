@@ -12,4 +12,9 @@
 	<resources>
 		<unmanagedDatasource alias="seraDb" mapToProperty="seraDb" />
 	</resources>
+
+    <monitoring>
+        <metric path="/metrics" />
+    </monitoring>
+
 </application>

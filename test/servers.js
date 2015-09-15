@@ -8,7 +8,7 @@ var Unit = require('../api/models/unitmongo')
 var api = require('../api')
 var config = require('../api/config/config')
 
-test('before server', function(t){
+test('prepare server', function(t){
     mongoose.connect(config.dbUrl)
 
     Server.remove({}, function (err) {
