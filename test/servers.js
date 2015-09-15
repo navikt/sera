@@ -2,13 +2,25 @@
 
 var test = require('tape')
 var request = require('supertest')
-var api = require('../api')
 var mongoose = require('mongoose')
 var Server = require('../api/models/servermongo')
+var Unit = require('../api/models/unitmongo')
+var api = require('../api')
+var config = require('../api/config/config')
 
-Server.remove({}, function (err) {
-    if (err) throw Error(err)
-    console.log("deleted all servers");
+test('before server', function(t){
+    mongoose.connect(config.dbUrl)
+
+    Server.remove({}, function (err) {
+        if (err) throw Error(err)
+        console.log("deleted all servers");
+    })
+    Unit.remove({}, function (err) {
+        if (err) throw Error(err)
+        console.log("deleted all units");
+    })
+
+    t.end()
 })
 
 test('POST /api/v1/servers', function (t) {
@@ -100,6 +112,11 @@ test('DELETE /api/v1/servers', function (t) {
                     t.end()
                 })
         })
+})
+
+test('cleanup servers', function(t){
+    mongoose.connection.close()
+    t.end()
 })
 
 var createServerPayload = function (hostnames) {

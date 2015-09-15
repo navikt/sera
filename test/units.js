@@ -2,18 +2,25 @@
 
 var test = require('tape')
 var request = require('supertest')
-var api = require('../api')
 var mongoose = require('mongoose')
 var Unit = require('../api/models/unitmongo')
+var api = require('../api')
+var config = require('../api/config/config')
 
-Unit.remove({}, function (err) {
-    if (err) throw Error(err)
-    console.log("deleted all units");
+test('prepare unit', function (t) {
+    mongoose.connect(config.dbUrl)
 
-    Unit.create({"name": "aunit", applications: ['1', '2', '3']}, function (err, doc) {
+    Unit.remove({}, function (err) {
         if (err) throw Error(err)
-        console.log("created", doc);
+        console.log("deleted all units");
+
+        Unit.create({"name": "aunit", applications: ['1', '2', '3']}, function (err, doc) {
+            if (err) throw Error(err)
+            console.log("created", doc);
+        })
     })
+
+    t.end()
 })
 
 test('PUT /api/v1/units/:unitid (create unit)', function (t) {
@@ -80,7 +87,7 @@ test('GET /api/v1/units (get all units)', function (t) {
         .get('/api/v1/units')
         .end(function (err, res) {
             t.equals(res.status, 200, 'successfully retrieving units yields http 200')
-            t.equals(res.body.length, 3, 'returns expected unit count')
+            t.equals(res.body.length, 2, 'returns expected unit count')
             t.false(res.body[0]._id, 'unit object has no _id field')
             t.false(res.body[0].__v, 'unit object has no __v field')
             t.end()
@@ -93,9 +100,9 @@ test('DELETE /api/v1/units/:unitid (delete unit)', function (t) {
         .end(function (err, res) {
             t.equals(res.status, 204, 'successfully deleting a unit yields http 204')
             request(api)
-                .get('/api/v1/units')
+                .get('/api/v1/units/aunit')
                 .end(function (err, res) {
-                    t.equals(res.body.length, 2, 'deletes a single unit')
+                    t.equals(res.status, 404, 'deletes a single unit')
                     t.end()
                 })
         })
@@ -106,8 +113,11 @@ test('DELETE /api/v1/units/:unitid (delete nonexistent unit)', function (t) {
         .delete('/api/v1/units/nonexistent')
         .end(function (err, res) {
             t.equals(res.status, 404, 'deleting a nonexistent unit yields http 404')
-            mongoose.connection.close()
             t.end()
         })
 })
 
+test('cleanup units', function(t){
+    mongoose.connection.close()
+    t.end()
+})
