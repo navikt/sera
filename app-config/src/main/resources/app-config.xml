@@ -3,7 +3,8 @@
 			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			 xsi:schemaLocation="http://appconfig.aura.nav.no http://maven.adeo.no/xsd/appconfig.xsd ">
 	<name>sera</name>
-	<artifacts />
+
+    <artifacts />
 
 	<exposed-services>
 		<exposedRest name="servers_v1"  description="Tjeneste for å registrere og hente servere" path="/version"/>
