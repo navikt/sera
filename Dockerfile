@@ -6,5 +6,5 @@ RUN yum install -y /tmp/nodejs/*.rpm
 
 COPY dist /opt/sera
 
-EXPOSE 8080
+EXPOSE 8443
 CMD ["node", "/opt/sera/server.js"]
