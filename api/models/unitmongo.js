@@ -1,7 +1,7 @@
 var mongoose = require('mongoose')
 
 var unitSchema = new mongoose.Schema({
-    name: String,
+    name: {type: String, lowercase: true},
     applications: [String]
 })
 
@@ -12,10 +12,14 @@ unitSchema.set('toJSON', {
     }
 })
 
+var toLowerCase = function (str) {
+    return str.toLowerCase()
+}
+
 unitSchema.statics.createFromObject = function (obj) {
     return new Unit({
         name: obj.name,
-        applications: obj.applications
+        applications: obj.applications.map(toLowerCase)
     });
 }
 
