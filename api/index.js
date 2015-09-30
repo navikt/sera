@@ -5,6 +5,13 @@ var morgan = require('morgan')
 var mongoose = require('mongoose')
 var config = require('./config/config')
 
+var cors = function (req, res, next) {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    return next();
+};
+
+app.use(cors)
+
 app.use(bodyParser.json({type: '*/*', limit: '50mb'}))
 app.use(morgan('combined'))
 require('./config/routes')(app)
