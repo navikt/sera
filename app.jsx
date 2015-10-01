@@ -14,14 +14,6 @@ var Sera = React.createClass({
         return {}
     },
 
-
-    componentDidMount: function () {
-        $.getJSON('http://localhost:8443/api/v1/servers').done(function (data) {
-            console.log(data);
-            this.setState(data)
-        }.bind(this));
-    },
-
     render: function () {
         return (
             <div>
@@ -46,7 +38,7 @@ var Sera = React.createClass({
 var routes = (
     <Route handler={Sera}>
         <DefaultRoute handler={DeployLog} />
-        <Route name="log" handler={DeployLog}/>
+        <Route name="servers" handler={DeployLog}/>
     </Route>
 )
 

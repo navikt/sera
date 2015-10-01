@@ -54,7 +54,7 @@ module.exports = DeployLog = React.createClass({
                     </tr>
                     <tbody>
                         {eventsToRender.map(function (elem) {
-                            return <TableRow key={elem.hostname} event={elem} />
+                            return <TableRow key={elem.hostname} server={elem} />
                         })}
                     </tbody>
                 </table>

@@ -3,13 +3,13 @@ var classString = require('react-classset');
 
 module.exports = LogRow = React.createClass({
     render: function () {
-        var event = this.props.event;
+        var server = this.props.server;
 
         return <tr>
-            <td>{event.hostname.toLowerCase()}</td>
-            <td>{event.application.toLowerCase()}</td>
-            <td>{event.environment.toUpperCase()}</td>
-            <td>{event.type.toLowerCase()}</td>
+            <td>{server.hostname.toLowerCase()}</td>
+            <td>{server.application.toLowerCase()}</td>
+            <td>{server.environment.toUpperCase()}</td>
+            <td>{server.type.toLowerCase()}</td>
         </tr>
     }
 });
