@@ -9,7 +9,7 @@ module.exports = LogRow = React.createClass({
             <td>{event.hostname.toLowerCase()}</td>
             <td>{event.application.toLowerCase()}</td>
             <td>{event.environment.toUpperCase()}</td>
-            <td>{event.type.toUpperCase()}</td>
+            <td>{event.type.toLowerCase()}</td>
         </tr>
     }
 });

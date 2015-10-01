@@ -37,7 +37,7 @@ module.exports = DeployLog = React.createClass({
                         <button type="button"  className="btn btn-default btn-sm" onClick={this.clearFilters} >
                             <i className="fa fa-trash"></i>
                         &nbsp;
-                        clear</button>
+                        tøm filtere</button>
                         <label className={this.regexpToggleButtonClasses()} title="Matcher strengene eksakt. F.eks 't1' matcher kun 't1', ikke 't10', 't11' osv. Støtter også regulære uttrykk.">
                             <input type="checkbox" autoComplete="off" onClick={this.toggleRegexpMode} />
                         eksakt match
@@ -162,7 +162,21 @@ module.exports = DeployLog = React.createClass({
 
     getServersFromBackend: function () {
         return $.getJSON('/api/v1/servers').success(function (data) {
-            this.setState({items: data})
+            this.setState({items: data.map(function(server){
+                if (!server.application){
+                    server.application = 'n/a'
+                }
+
+                if (!server.environment){
+                    server.environment = 'n/a'
+                }
+
+                if (!server.type){
+                    server.type = 'n/a'
+                }
+
+                return server;
+            })})
         }.bind(this));
     },
 
