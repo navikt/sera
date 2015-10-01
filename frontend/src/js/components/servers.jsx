@@ -48,9 +48,11 @@ module.exports = Servers = React.createClass({
                 <table className='table table-bordered table-striped'>
                     <tr>
                         <TableHeader columnName="hostname" regexp={this.state.filters.regexp} value={this.state.filters.hostname} changeHandler={this.handleChange} />
-                        <TableHeader columnName="application" regexp={this.state.filters.regexp} value={this.state.filters.application} changeHandler={this.handleChange} />
-                        <TableHeader columnName="environment" regexp={this.state.filters.regexp} value={this.state.filters.environment} changeHandler={this.handleChange} />
                         <TableHeader columnName="type" regexp={this.state.filters.regexp} value={this.state.filters.type} changeHandler={this.handleChange} />
+                        <TableHeader columnName="environment" regexp={this.state.filters.regexp} value={this.state.filters.environment} changeHandler={this.handleChange} />
+                        <TableHeader columnName="application" regexp={this.state.filters.regexp} value={this.state.filters.application} changeHandler={this.handleChange} />
+                        <TableHeader columnName="unit" regexp={this.state.filters.regexp} value={this.state.filters.unit} changeHandler={this.handleChange} />
+                        <td className="text-center"><h5>Resources</h5></td>
                     </tr>
                     <tbody>
                         {eventsToRender.map(function (elem) {
@@ -63,7 +65,7 @@ module.exports = Servers = React.createClass({
         )
     },
 
-    validBackendParams: ["application", "environment", "type", "hostname"],
+    validBackendParams: ["application", "environment", "type", "hostname", "unit"],
 
     DEPLOYLOG_SERVICE: '/api/v1/servers',
 
@@ -72,6 +74,7 @@ module.exports = Servers = React.createClass({
         application: '',
         environment: '',
         type: '',
+        unit: '',
         regexp: false
     },
 
@@ -105,14 +108,16 @@ module.exports = Servers = React.createClass({
             "hostname": compileValidRegEx(this.state.filters["hostname"]),
             "application": compileValidRegEx(this.state.filters["application"]),
             "environment": compileValidRegEx(this.state.filters["environment"]),
-            "type": compileValidRegEx(this.state.filters["type"])
+            "type": compileValidRegEx(this.state.filters["type"]),
+            "unit": compileValidRegEx(this.state.filters["unit"])
         }
 
         return items.filter(function (item) {
             return preCompiledRegexp["hostname"].test(item.hostname) &&
                 preCompiledRegexp["application"].test(item.application) &&
                 preCompiledRegexp["environment"].test(item.environment) &&
-                preCompiledRegexp["type"].test(item.type)
+                preCompiledRegexp["type"].test(item.type) &&
+                preCompiledRegexp["type"].test(item.unit)
         }.bind(this));
     },
 
@@ -121,6 +126,7 @@ module.exports = Servers = React.createClass({
             && elem.application.toLowerCase().indexOf(this.state.filters.application.toLowerCase()) > -1
             && elem.environment.toLowerCase().indexOf(this.state.filters.environment.toLowerCase()) > -1
             && elem.type.toLowerCase().indexOf(this.state.filters.type.toLowerCase()) > -1
+            && elem.unit.toLowerCase().indexOf(this.state.filters.unit.toLowerCase()) > -1
     },
 
     handleChange: function (e) {
@@ -164,6 +170,10 @@ module.exports = Servers = React.createClass({
                 }
 
                 if (!server.type){
+                    server.type = 'n/a'
+                }
+
+                if (!server.unit){
                     server.type = 'n/a'
                 }
 
