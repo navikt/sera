@@ -7,7 +7,7 @@ var TableRow = require('./tablerow.jsx');
 var TableHeader = require('./tableheader.jsx')
 var classString = require('react-classset');
 
-module.exports = DeployLog = React.createClass({
+module.exports = Servers = React.createClass({
 
     mixins: [Router.State],
 
@@ -26,13 +26,13 @@ module.exports = DeployLog = React.createClass({
 
     render: function () {
 
-        filteredEvents = this.applyHeaderFilter(this.state.items, this.state.filters.regexp).filter(this.inactiveVersionsIfEnabled);
-        eventsToRender = filteredEvents.slice(0, this.state.itemRenderCount);
+        var filteredEvents = this.applyHeaderFilter(this.state.items, this.state.filters.regexp)
+        var eventsToRender = filteredEvents.slice(0, this.state.itemRenderCount)
 
         return (
             <div className="container">
-                <h2>servers
-                    <small>{eventsToRender.length + "/" + this.state.items.length}</small>
+                <h2>servers&nbsp;
+                    <small>{filteredEvents.length + "/" + this.state.items.length}</small>
                     <div className="pull-right btn-toolbar" data-toggle="buttons" role="group">
                         <button type="button"  className="btn btn-default btn-sm" onClick={this.clearFilters} >
                             <i className="fa fa-trash"></i>
@@ -121,14 +121,6 @@ module.exports = DeployLog = React.createClass({
             && elem.application.toLowerCase().indexOf(this.state.filters.application.toLowerCase()) > -1
             && elem.environment.toLowerCase().indexOf(this.state.filters.environment.toLowerCase()) > -1
             && elem.type.toLowerCase().indexOf(this.state.filters.type.toLowerCase()) > -1
-    },
-
-    inactiveVersionsIfEnabled: function (elem) {
-        if (!this.state.filters.onlyLatest) {
-            return true;
-        } else {
-            return elem.replaced_timestamp === null;
-        }
     },
 
     handleChange: function (e) {

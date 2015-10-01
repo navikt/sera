@@ -1,6 +1,6 @@
 var React = require('react');
 var $ = jQuery = require('jquery');
-var DeployLog = require('./frontend/src/js/components/deploylog.jsx');
+var Servers = require('./frontend/src/js/components/servers.jsx');
 var Router = require('react-router');
 var RouteHandler = Router.RouteHandler;
 var DefaultRoute = Router.DefaultRoute;
@@ -37,8 +37,8 @@ var Sera = React.createClass({
 
 var routes = (
     <Route handler={Sera}>
-        <DefaultRoute handler={DeployLog} />
-        <Route name="servers" handler={DeployLog}/>
+        <DefaultRoute handler={Servers} />
+        <Route name="servers" handler={Servers}/>
     </Route>
 )
 
