@@ -161,7 +161,7 @@ module.exports = DeployLog = React.createClass({
     },
 
     getServersFromBackend: function () {
-        return $.getJSON('http://localhost:8443/api/v1/servers').success(function (data) {
+        return $.getJSON('/api/v1/servers').success(function (data) {
             this.setState({items: data})
         }.bind(this));
     },
