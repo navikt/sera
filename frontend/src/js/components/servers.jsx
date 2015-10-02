@@ -117,7 +117,7 @@ module.exports = Servers = React.createClass({
                 preCompiledRegexp["application"].test(item.application) &&
                 preCompiledRegexp["environment"].test(item.environment) &&
                 preCompiledRegexp["type"].test(item.type) &&
-                preCompiledRegexp["type"].test(item.unit)
+                preCompiledRegexp["unit"].test(item.unit)
         }.bind(this));
     },
 
