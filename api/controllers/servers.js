@@ -110,7 +110,7 @@ var createServerObjects = function (objects) {
         _.forIn(ServerDefinition, function (value, key) {
             var incomingValue = object[key]
             if (incomingValue) {
-                if (ServerDefinition[key].type === String) {
+                if (ServerDefinition[key].schemaType === 'string') {
                     incomingValue = incomingValue.toLowerCase()
                 }
                 server[key] = incomingValue

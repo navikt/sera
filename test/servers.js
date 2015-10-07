@@ -82,6 +82,7 @@ test('GET servers, PUT unit, GET servers', function (t) {
                     request(api)
                         .get('/api/v1/servers?hostname=a01apvl069.devillo')
                         .end(function (err, res) {
+                            console.log(res.body);
                             t.equals(res.body[0].unit, 'aura', 'unit is returned for server when application is in unit')
                             t.end()
                         })
@@ -135,6 +136,7 @@ var createServerPayload = function (hostnames) {
             disk: 100,
             srm: false,
             custom: true,
+            status: 'poweredOn',
             environmentClass: 'p'
         }
     })

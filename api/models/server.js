@@ -1,66 +1,70 @@
 module.exports = {
     hostname: {
-        type: String,
+        mongoSchemaDefinition: {type: String},
         schemaType: 'string'
     },
     ipAddress: {
-        type: String,
+        mongoSchemaDefinition: {type: String},
         schemaType: 'string'
     },
     environment: {
-        type: String,
+        mongoSchemaDefinition: {type: String},
         schemaType: 'string'
     },
     environmentClass: {
-        type: String,
+        mongoSchemaDefinition: {type: String},
         schemaType: {'enum': ['u', 't', 'q', 'p']}
     },
     status: {
-        type: String,
+        mongoSchemaDefinition: {type: String},
         schemaType: {'enum': ['poweredOn', 'poweredOff', 'suspended']}
     },
     application: {
-        type: String,
+        mongoSchemaDefinition: {type: String},
         schemaType: 'string'
     },
     type: {
-        type: String,
+        mongoSchemaDefinition: {type: String},
         schemaType: 'string'
     },
     owner: {
-        type: String,
+        mongoSchemaDefinition: {type: String},
         schemaType: 'string'
     },
     cpu: {
-        type: Number,
+        mongoSchemaDefinition: {type: Number},
         schemaType: 'number'
     },
     disk: {
-        type: Number,
+        mongoSchemaDefinition: {type: Number},
         schemaType: 'number'
     },
     memory: {
-        type: Number,
+        mongoSchemaDefinition: {type: Number},
         schemaType: 'number'
     },
     notes: {
-        type: String,
+        mongoSchemaDefinition: {type: String},
         schemaType: 'string'
     },
     os: {
-        type: String,
+        mongoSchemaDefinition: {type: String},
         schemaType: {'enum': ['windows', 'rhel']}
     },
     site: {
-        type: String,
+        mongoSchemaDefinition: {type: String},
         schemaType: {'enum': ['so8', 'u89']}
     },
     custom: {
-        type: Boolean,
+        mongoSchemaDefinition: {type: Boolean},
         schemaType: 'boolean'
     },
     srm: {
-        type: Boolean,
+        mongoSchemaDefinition: {type: Boolean},
         schemaType: 'boolean'
+    },
+    created: {
+        mongoSchemaDefinition: {type: String},
+        schemaType: 'string'
     }
 }
