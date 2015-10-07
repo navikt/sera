@@ -11,6 +11,7 @@ module.exports = LogRow = React.createClass({
             <td>{server.environment.toUpperCase()}</td>
             <td>{server.application.toLowerCase()}</td>
             <td>{server.unit.toLowerCase()}</td>
+            <td>{server.site.toUpperCase()}</td>
             <td>{server.cpu} core(s) | {server.memory}GB ram | {server.disk}GB disk</td>
         </tr>
     }

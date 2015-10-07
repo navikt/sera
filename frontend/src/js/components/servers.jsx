@@ -52,6 +52,7 @@ module.exports = Servers = React.createClass({
                         <TableHeader columnName="environment" regexp={this.state.filters.regexp} value={this.state.filters.environment} changeHandler={this.handleChange} />
                         <TableHeader columnName="application" regexp={this.state.filters.regexp} value={this.state.filters.application} changeHandler={this.handleChange} />
                         <TableHeader columnName="unit" regexp={this.state.filters.regexp} value={this.state.filters.unit} changeHandler={this.handleChange} />
+                        <TableHeader columnName="site" regexp={this.state.filters.regexp} value={this.state.filters.site} changeHandler={this.handleChange} />
                         <td className="text-center"><h5>Resources</h5></td>
                     </tr>
                     <tbody>
@@ -75,6 +76,7 @@ module.exports = Servers = React.createClass({
         environment: '',
         type: '',
         unit: '',
+        site: '',
         regexp: false
     },
 
@@ -127,6 +129,7 @@ module.exports = Servers = React.createClass({
             && elem.environment.toLowerCase().indexOf(this.state.filters.environment.toLowerCase()) > -1
             && elem.type.toLowerCase().indexOf(this.state.filters.type.toLowerCase()) > -1
             && elem.unit.toLowerCase().indexOf(this.state.filters.unit.toLowerCase()) > -1
+            && elem.site.toLowerCase().indexOf(this.state.filters.site.toLowerCase()) > -1
     },
 
     handleChange: function (e) {
@@ -175,6 +178,10 @@ module.exports = Servers = React.createClass({
 
                 if (!server.unit){
                     server.type = 'n/a'
+                }
+
+                if (!server.site){
+                    server.site = 'n/a'
                 }
 
                 return server;
