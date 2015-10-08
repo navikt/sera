@@ -2,14 +2,11 @@ var React = require('react');
 var $ = require('jquery');
 var moment = require('moment');
 var _ = require('lodash');
-var Router = require('react-router');
 var TableRow = require('./tablerow.jsx');
 var TableHeader = require('./tableheader.jsx')
 var classString = require('react-classset');
 
 module.exports = Servers = React.createClass({
-
-    mixins: [Router.State],
 
     getInitialState: function () {
         return {
@@ -37,37 +34,29 @@ module.exports = Servers = React.createClass({
                         <button type="button"  className="btn btn-default btn-sm" onClick={this.clearFilters} >
                             <i className="fa fa-trash"></i>
                         &nbsp;
-                            tøm filtere</button>
+                        tøm filtere</button>
                         <label className={this.regexpToggleButtonClasses()} title="Matcher strengene eksakt. F.eks 't1' matcher kun 't1', ikke 't10', 't11' osv. Støtter også regulære uttrykk.">
                             <input type="checkbox" autoComplete="off" onClick={this.toggleRegexpMode} />
-                            eksakt match
+                        eksakt match
                         </label>
                     </div>
                 </h2>
 
                 <table className='table table-bordered table-striped'>
                     <thead>
-                        <tr>
-                            <td className="text-center">
-                                <h5>status</h5>
-                            </td>
-                            <TableHeader columnName="hostname" regexp={this.state.filters.regexp} value={this.state.filters.hostname} changeHandler={this.handleChange} />
-                            <TableHeader columnName="type" regexp={this.state.filters.regexp} value={this.state.filters.type} changeHandler={this.handleChange} />
-                            <TableHeader columnName="environment" regexp={this.state.filters.regexp} value={this.state.filters.environment} changeHandler={this.handleChange} />
-                            <TableHeader columnName="application" regexp={this.state.filters.regexp} value={this.state.filters.application} changeHandler={this.handleChange} />
-                            <TableHeader columnName="unit" regexp={this.state.filters.regexp} value={this.state.filters.unit} changeHandler={this.handleChange} />
-                            <TableHeader columnName="site" regexp={this.state.filters.regexp} value={this.state.filters.site} changeHandler={this.handleChange} />
-                            <td className="text-center">
-                                <h5>cpu</h5>
-                            </td>
-                            <td className="text-center">
-                                <h5>memory</h5>
-                            </td>
-                            <td className="text-center">
-                                <h5>disk</h5>
-                            </td>
-                        </tr>
-                    </thead>
+                    <tr>
+                        <td className="text-center"><h5>status</h5></td>
+                        <TableHeader columnName="hostname" regexp={this.state.filters.regexp} value={this.state.filters.hostname} changeHandler={this.handleChange} />
+                        <TableHeader columnName="type" regexp={this.state.filters.regexp} value={this.state.filters.type} changeHandler={this.handleChange} />
+                        <TableHeader columnName="environment" regexp={this.state.filters.regexp} value={this.state.filters.environment} changeHandler={this.handleChange} />
+                        <TableHeader columnName="application" regexp={this.state.filters.regexp} value={this.state.filters.application} changeHandler={this.handleChange} />
+                        <TableHeader columnName="unit" regexp={this.state.filters.regexp} value={this.state.filters.unit} changeHandler={this.handleChange} />
+                        <TableHeader columnName="site" regexp={this.state.filters.regexp} value={this.state.filters.site} changeHandler={this.handleChange} />
+                        <td className="text-center"><h5>cpu</h5></td>
+                        <td className="text-center"><h5>memory</h5></td>
+                        <td className="text-center"><h5>disk</h5></td>
+                    </tr>
+                        </thead>
                     <tbody>
                         {eventsToRender.map(function (elem) {
                             return <TableRow key={elem.hostname} server={elem} />
@@ -102,7 +91,7 @@ module.exports = Servers = React.createClass({
     },
 
     filterWithPreCompiledRegexp: function (items) {
-        var compileValidRegEx = function (filterValue) {
+        var compileValidRegEx = function(filterValue){
             var isValidRegex = function (expression) {
                 try {
                     new RegExp("^" + expression + "$");
@@ -112,7 +101,7 @@ module.exports = Servers = React.createClass({
                 }
             }
 
-            if (isValidRegex(filterValue)) {
+            if (isValidRegex(filterValue)){
                 return new RegExp("^" + (filterValue ? filterValue : ".*") + "$", "i");
             } else {
                 return new RegExp("^$");
@@ -176,31 +165,29 @@ module.exports = Servers = React.createClass({
 
     getServersFromBackend: function () {
         return $.getJSON('/api/v1/servers').success(function (data) {
-            this.setState({
-                items: data.map(function (server) {
-                    if (!server.application) {
-                        server.application = 'n/a'
-                    }
+            this.setState({items: data.map(function(server){
+                if (!server.application){
+                    server.application = 'n/a'
+                }
 
-                    if (!server.environment) {
-                        server.environment = 'n/a'
-                    }
+                if (!server.environment){
+                    server.environment = 'n/a'
+                }
 
-                    if (!server.type) {
-                        server.type = 'n/a'
-                    }
+                if (!server.type){
+                    server.type = 'n/a'
+                }
 
-                    if (!server.unit) {
-                        server.type = 'n/a'
-                    }
+                if (!server.unit){
+                    server.type = 'n/a'
+                }
 
-                    if (!server.site) {
-                        server.site = 'n/a'
-                    }
+                if (!server.site){
+                    server.site = 'n/a'
+                }
 
-                    return server;
-                })
-            })
+                return server;
+            })})
         }.bind(this));
     },
 
