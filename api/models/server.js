@@ -1,6 +1,6 @@
 module.exports = {
     hostname: {
-        mongoSchemaDefinition: {type: String},
+        mongoSchemaDefinition: {type: String, unique: true},
         schemaType: 'string'
     },
     ipAddress: {

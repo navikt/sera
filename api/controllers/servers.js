@@ -6,15 +6,19 @@ var calculateServerCost = require('./costcalculator')
 
 exports.registerServers = function () {
     return function (req, res, next) {
-        var body = validateRequest(req.body)
-        var servers = createServerObjects(body)
+        var validation = schemaValidateRequest(req.body)
+
+        if (validation.errors.length > 0) {
+            return res.status(400).send('JSON schema validation failed with the following errors: ' + validation.errors)
+        }
+
+        var servers = createServerObjects(req.body)
 
         ServerMongoModel.collection.insert(servers, function (err, docs) {
             if (err) {
-                return next(err)
+                res.status(400).send(err.message)
             } else {
-                res.status(201)
-                res.send(docs.ops.length + ' servers created')
+                res.status(201).send(docs.ops.length + ' servers created')
             }
         })
     }
@@ -55,8 +59,8 @@ exports.deleteServers = function () {
     }
 }
 
-var enrichWithUnit = function(servers, units){
-    return servers.map(function(server){
+var enrichWithUnit = function (servers, units) {
+    return servers.map(function (server) {
         server['unit'] = '' // always set unit to something, enrich with actual unitname if match is found
 
         var application = server.application;
@@ -74,16 +78,10 @@ var enrichWithUnit = function(servers, units){
     });
 }
 
-var validateRequest = function (request) {
+var schemaValidateRequest = function (request) {
     var validate = require('jsonschema').validate
     var ServerJsonSchema = require('../models/serverschema')
-    var validation = validate(request, ServerJsonSchema)
-
-    if (validation.errors.length > 0) {
-        throw new Error('JSON schema validation failed with the following errors: ' + validation.errors)
-    }
-
-    return request
+    return validate(request, ServerJsonSchema)
 }
 
 var createMongoQueryFromRequest = function (request) {

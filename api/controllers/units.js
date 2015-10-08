@@ -52,18 +52,17 @@ exports.getUnits = function () {
 exports.deleteUnit = function () {
     return function (req, res, next) {
         var unitName = req.params.unitid;
-        Unit.find({name: unitName}, function (err, units) {
+        Unit.findOne({name: unitName}, function (err, unit) {
             if (err) return next(err)
 
-            if (units.length === 0) {
+            if (!unit) {
                 res.status(404)
                 res.send("no unit found with id " + unitName)
             } else {
-                units.forEach(function (unit) {
-                    unit.remove()
+                unit.remove(function(err){
+                    res.status(204)
+                    res.send("successfully removed unit " + unitName)
                 })
-                res.status(204)
-                res.send("successfully removed unit " + unitName)
             }
         })
     }

@@ -34,6 +34,26 @@ test('POST /api/v1/servers', function (t) {
         })
 })
 
+test('POST /api/v1/servers (same hostname as existing)', function (t) {
+    request(api)
+        .post('/api/v1/servers')
+        .send(createServerPayload(['a01apvl069.devillo.central']))
+        .end(function (err, res) {
+            t.equals(res.status, 400, 'posting a new server with the same hostname as existing yields http 400')
+            t.end()
+        })
+})
+
+test('POST /api/v1/servers (non-unique hostnames)', function (t) {
+    request(api)
+        .post('/api/v1/servers')
+        .send(createServerPayload(['duplicate.devillo.central', 'duplicate.devillo.central']))
+        .end(function (err, res) {
+            t.equals(res.status, 400, 'posting a two servers with the same hostname yields http 400')
+            t.end()
+        })
+})
+
 test('GET /api/v1/servers', function (t) {
     request(api)
         .get('/api/v1/servers')
