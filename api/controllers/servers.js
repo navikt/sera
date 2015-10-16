@@ -24,10 +24,13 @@ exports.registerServers = function () {
     }
 }
 
+var enrichWith
+
 exports.getServers = function () {
     return function (req, res, next) {
         ServerMongoModel.find(createMongoQueryFromRequest(req.query), function (err, servers) {
             if (err) return next(err)
+
             servers = JSON.parse(JSON.stringify(servers)) // doc -> json
 
             Unit.find({}, function (err, units) {
@@ -105,6 +108,8 @@ var createMongoQueryFromRequest = function (request) {
 var createServerObjects = function (objects) {
     var createFromRequestObject = function (object) {
         var server = {}
+
+        // picks properties from object based on the server object definition
         _.forIn(ServerDefinition, function (value, key) {
             var incomingValue = object[key]
             if (incomingValue) {
@@ -114,6 +119,11 @@ var createServerObjects = function (objects) {
                 server[key] = incomingValue
             }
         })
+
+        if (!server.created){
+            server.created = 'n/a'
+        }
+
         return server
     }
 
@@ -123,6 +133,8 @@ var createServerObjects = function (objects) {
 }
 
 var returnCSVPayload = function (servers, res) {
+
+    // dynamically create CSV mapping object (csv-header) based on js-object
     var createCSVMapping = function (servers) {
         var createMappingObject = function (item) {
             var mappingObjectArray = []

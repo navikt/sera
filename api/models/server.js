@@ -1,30 +1,30 @@
 module.exports = {
     hostname: {
-        mongoSchemaDefinition: {type: String, unique: true},
+        mongoSchemaDefinition: {type: String, unique: true, lowercase: true},
         schemaType: 'string'
     },
     ipAddress: {
-        mongoSchemaDefinition: {type: String},
+        mongoSchemaDefinition: {type: String, lowercase: true},
         schemaType: 'string'
     },
     environment: {
-        mongoSchemaDefinition: {type: String},
+        mongoSchemaDefinition: {type: String, lowercase: true},
         schemaType: 'string'
     },
     environmentClass: {
-        mongoSchemaDefinition: {type: String},
+        mongoSchemaDefinition: {type: String, lowercase: true},
         schemaType: {'enum': ['u', 't', 'q', 'p']}
     },
     status: {
-        mongoSchemaDefinition: {type: String},
-        schemaType: {'enum': ['poweredOn', 'poweredOff', 'suspended']}
+        mongoSchemaDefinition: {type: String, lowercase: true},
+        schemaType: {'enum': ['poweredOn', 'poweredon', 'poweredOff', 'poweredoff', 'suspended']}
     },
     application: {
-        mongoSchemaDefinition: {type: String},
+        mongoSchemaDefinition: {type: String, lowercase: true},
         schemaType: 'string'
     },
     type: {
-        mongoSchemaDefinition: {type: String},
+        mongoSchemaDefinition: {type: String, lowercase: true},
         schemaType: 'string'
     },
     owner: {
@@ -43,16 +43,12 @@ module.exports = {
         mongoSchemaDefinition: {type: Number},
         schemaType: 'number'
     },
-    notes: {
-        mongoSchemaDefinition: {type: String},
-        schemaType: 'string'
-    },
     os: {
-        mongoSchemaDefinition: {type: String},
+        mongoSchemaDefinition: {type: String, lowercase: true},
         schemaType: {'enum': ['windows', 'rhel']}
     },
     site: {
-        mongoSchemaDefinition: {type: String},
+        mongoSchemaDefinition: {type: String, lowercase: true},
         schemaType: {'enum': ['so8', 'u89']}
     },
     custom: {
@@ -64,7 +60,7 @@ module.exports = {
         schemaType: 'boolean'
     },
     created: {
-        mongoSchemaDefinition: {type: String},
+        mongoSchemaDefinition: {type: String, lowercase: true},
         schemaType: 'string'
     }
 }

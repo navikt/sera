@@ -2,18 +2,26 @@ var React = require('react');
 var $ = require('jquery');
 var moment = require('moment');
 var _ = require('lodash');
+var classString = require('react-classset');
 var TableRow = require('./tablerow.jsx');
 var TableHeader = require('./tableheader.jsx')
-var classString = require('react-classset');
 
 module.exports = Servers = React.createClass({
 
     getInitialState: function () {
         return {
             items: [],
-            loaded: false,
             itemRenderCount: 50,
-            filters: this.enrichFromObject(this.emptyFilters, location.search)
+            filters: {
+                hostname: '',
+                application: '',
+                environment: '',
+                type: '',
+                unit: '',
+                site: '',
+                created: '',
+                regexp: false
+            }
         };
     },
 
@@ -23,13 +31,13 @@ module.exports = Servers = React.createClass({
 
     render: function () {
 
-        var filteredEvents = this.applyHeaderFilter(this.state.items, this.state.filters.regexp)
-        var eventsToRender = filteredEvents.slice(0, this.state.itemRenderCount)
+        var filteredServers = this.applyHeaderFilter(this.state.items, this.state.filters.regexp)
+        var serversToRender = filteredServers.slice(0, this.state.itemRenderCount)
 
         return (
             <div className="container">
                 <h2>servers&nbsp;
-                    <small>{filteredEvents.length + "/" + this.state.items.length}</small>
+                    <small>{filteredServers.length + "/" + this.state.items.length}</small>
                     <div className="pull-right btn-toolbar" data-toggle="buttons" role="group">
                         <button type="button"  className="btn btn-default btn-sm" onClick={this.clearFilters} >
                             <i className="fa fa-trash"></i>
@@ -52,13 +60,14 @@ module.exports = Servers = React.createClass({
                         <TableHeader columnName="application" regexp={this.state.filters.regexp} value={this.state.filters.application} changeHandler={this.handleChange} />
                         <TableHeader columnName="unit" regexp={this.state.filters.regexp} value={this.state.filters.unit} changeHandler={this.handleChange} />
                         <TableHeader columnName="site" regexp={this.state.filters.regexp} value={this.state.filters.site} changeHandler={this.handleChange} />
+                        <TableHeader columnName="created" regexp={this.state.filters.regexp} value={this.state.filters.created} changeHandler={this.handleChange} />
                         <td className="text-center"><h5>cpu</h5></td>
                         <td className="text-center"><h5>memory</h5></td>
                         <td className="text-center"><h5>disk</h5></td>
                     </tr>
                         </thead>
                     <tbody>
-                        {eventsToRender.map(function (elem) {
+                        {serversToRender.map(function (elem) {
                             return <TableRow key={elem.hostname} server={elem} />
                         })}
                     </tbody>
@@ -71,16 +80,6 @@ module.exports = Servers = React.createClass({
     validBackendParams: ["application", "environment", "type", "hostname", "unit"],
 
     DEPLOYLOG_SERVICE: '/api/v1/servers',
-
-    emptyFilters: {
-        hostname: '',
-        application: '',
-        environment: '',
-        type: '',
-        unit: '',
-        site: '',
-        regexp: false
-    },
 
     applyHeaderFilter: function (items, regexpMode) {
         if (regexpMode) {
@@ -132,6 +131,7 @@ module.exports = Servers = React.createClass({
             && elem.type.toLowerCase().indexOf(this.state.filters.type.toLowerCase()) > -1
             && elem.unit.toLowerCase().indexOf(this.state.filters.unit.toLowerCase()) > -1
             && elem.site.toLowerCase().indexOf(this.state.filters.site.toLowerCase()) > -1
+            && elem.created.toLowerCase().indexOf(this.state.filters.created.toLowerCase()) > -1
     },
 
     handleChange: function (e) {
@@ -140,64 +140,43 @@ module.exports = Servers = React.createClass({
         this.setState({filters: filter});
     },
 
-    getInitialBackendParams: function () {
-        var serialize = function (obj) {
-            return '?' + Object.keys(obj).reduce(function (a, k) {
-                    a.push(k + '=' + encodeURIComponent(obj[k]));
-                    return a;
-                }, []).join('&')
-        };
-
-        var extractFromObject = function (values, object) {
-            return Object.keys(object).filter(function (val) {
-                return values.indexOf(val) > -1;
-            });
-        };
-
-        var urlContainsValidBackendParams = extractFromObject(this.validBackendParams, location.search).length > 0;
-        if (urlContainsValidBackendParams) {
-            var extractedValidParams = _.pick(location.search, this.validBackendParams);
-            return serialize(extractedValidParams);
-        } else {
-            return '?last=1week';
+    toReadableDateFormat: function (server) {
+        if (server.created !== 'n/a'){
+            server.created = moment(server.created).format('DD-MM-YY HH:mm:ss');
         }
+        return server;
+    },
+
+    fillBlanks: function (server) {
+
+        if (!server.application) {
+            server.application = 'n/a'
+        }
+
+        if (!server.environment) {
+            server.environment = 'n/a'
+        }
+
+        if (!server.type) {
+            server.type = 'n/a'
+        }
+
+        if (!server.unit) {
+            server.unit = 'n/a'
+        }
+
+        if (!server.site) {
+            server.site = 'n/a'
+        }
+
+        return server;
     },
 
     getServersFromBackend: function () {
         return $.getJSON('/api/v1/servers').success(function (data) {
-            this.setState({items: data.map(function(server){
-                if (!server.application){
-                    server.application = 'n/a'
-                }
-
-                if (!server.environment){
-                    server.environment = 'n/a'
-                }
-
-                if (!server.type){
-                    server.type = 'n/a'
-                }
-
-                if (!server.unit){
-                    server.type = 'n/a'
-                }
-
-                if (!server.site){
-                    server.site = 'n/a'
-                }
-
-                return server;
-            })})
+            var servers = data.map(this.fillBlanks).map(this.toReadableDateFormat)
+            this.setState({items: servers})
         }.bind(this));
-    },
-
-    enrichFromObject: function (base, object) {
-        var enrichedObject = {};
-        Object.keys(base).forEach(function (key) {
-            enrichedObject[key] = object[key] ? object[key] : '';
-        });
-
-        return enrichedObject;
     },
 
     viewMoreResults: function () {
