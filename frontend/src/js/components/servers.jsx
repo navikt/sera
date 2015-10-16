@@ -169,6 +169,10 @@ module.exports = Servers = React.createClass({
             server.site = 'n/a'
         }
 
+        if (!server.created){
+            server.created = 'n/a'
+        }
+
         return server;
     },
 
