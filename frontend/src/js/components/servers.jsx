@@ -12,17 +12,19 @@ module.exports = Servers = React.createClass({
         return {
             items: [],
             itemRenderCount: 50,
-            filters: {
-                hostname: '',
-                application: '',
-                environment: '',
-                type: '',
-                unit: '',
-                site: '',
-                created: '',
-                regexp: false
-            }
+            filters: this.emptyFilters
         };
+    },
+
+    emptyFilters: {
+        hostname: '',
+        application: '',
+        environment: '',
+        type: '',
+        unit: '',
+        site: '',
+        created: '',
+        regexp: false
     },
 
     componentDidMount: function () {
@@ -31,6 +33,8 @@ module.exports = Servers = React.createClass({
 
     render: function () {
 
+        console.log("filters:",this.state.filters);
+        
         var filteredServers = this.applyHeaderFilter(this.state.items, this.state.filters.regexp)
         var serversToRender = filteredServers.slice(0, this.state.itemRenderCount)
 
@@ -112,7 +116,8 @@ module.exports = Servers = React.createClass({
             "application": compileValidRegEx(this.state.filters["application"]),
             "environment": compileValidRegEx(this.state.filters["environment"]),
             "type": compileValidRegEx(this.state.filters["type"]),
-            "unit": compileValidRegEx(this.state.filters["unit"])
+            "unit": compileValidRegEx(this.state.filters["unit"]),
+            "created": compileValidRegEx(this.state.filters["created"])
         }
 
         return items.filter(function (item) {
@@ -120,7 +125,8 @@ module.exports = Servers = React.createClass({
                 preCompiledRegexp["application"].test(item.application) &&
                 preCompiledRegexp["environment"].test(item.environment) &&
                 preCompiledRegexp["type"].test(item.type) &&
-                preCompiledRegexp["unit"].test(item.unit)
+                preCompiledRegexp["unit"].test(item.unit) &&
+                preCompiledRegexp["created"].test(item.created)
         }.bind(this));
     },
 
