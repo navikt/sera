@@ -142,7 +142,7 @@ module.exports = Servers = React.createClass({
 
     toReadableDateFormat: function (server) {
         if (server.created !== 'n/a'){
-            server.created = moment(server.created).format('DD-MM-YY HH:mm:ss');
+            server.created = moment(server.created.toUpperCase()).format('DD-MM-YY HH:mm:ss');
         }
         return server;
     },

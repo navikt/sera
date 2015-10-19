@@ -60,7 +60,7 @@ module.exports = {
         schemaType: 'boolean'
     },
     created: {
-        mongoSchemaDefinition: {type: String, lowercase: true},
+        mongoSchemaDefinition: {type: String},
         schemaType: 'string'
     }
 }
