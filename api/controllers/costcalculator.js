@@ -26,9 +26,9 @@ var calcMWCost = function (type, environmentClass) {
 }
 
 var calcBaseCost = function (osType) {
-    if (osType === 'rhel') {
+    if (osType.indexOf('Linux') > -1) {
         return 520
-    } else if (osType === 'windows') {
+    } else if (osType.indexOf('Windows') > -1) {
         return 520
     } else {
         return 0

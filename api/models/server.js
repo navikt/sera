@@ -45,7 +45,7 @@ module.exports = {
     },
     os: {
         mongoSchemaDefinition: {type: String, lowercase: true},
-        schemaType: {'enum': ['windows', 'rhel']}
+        schemaType: 'string'
     },
     site: {
         mongoSchemaDefinition: {type: String, lowercase: true},
