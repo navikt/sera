@@ -5,7 +5,7 @@ module.exports = LogRow = React.createClass({
         var servers = this.props.servers;
 
         var summarize = function (total, num) {
-            return total + num
+            return isNaN(num) ? total : total + num
         }
 
         return <tr>
