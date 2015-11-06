@@ -4,6 +4,7 @@ var moment = require('moment');
 var _ = require('lodash');
 var classString = require('react-classset');
 var TableRow = require('./tablerow.jsx');
+var SigmaRow = require('./sigmarow.jsx');
 var TableHeader = require('./tableheader.jsx')
 
 module.exports = Servers = React.createClass({
@@ -32,9 +33,6 @@ module.exports = Servers = React.createClass({
     },
 
     render: function () {
-
-        console.log("filters:",this.state.filters);
-        
         var filteredServers = this.applyHeaderFilter(this.state.items, this.state.filters.regexp)
         var serversToRender = filteredServers.slice(0, this.state.itemRenderCount)
 
@@ -53,7 +51,6 @@ module.exports = Servers = React.createClass({
                         </label>
                     </div>
                 </h2>
-
                 <table className='table table-bordered table-striped'>
                     <thead>
                     <tr>
@@ -74,6 +71,7 @@ module.exports = Servers = React.createClass({
                         {serversToRender.map(function (elem) {
                             return <TableRow key={elem.hostname} server={elem} />
                         })}
+                        <SigmaRow servers={filteredServers} />
                     </tbody>
                 </table>
                 <button type="button" className="btn btn-link" onClick={this.viewMoreResults}>View more results...</button>
