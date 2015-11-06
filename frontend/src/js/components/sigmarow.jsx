@@ -17,15 +17,15 @@ module.exports = LogRow = React.createClass({
             <td></td>
             <td></td>
             <td><strong>Σ</strong> (totals)</td>
-            <td style={{whiteSpace: "nowrap"}} ><strong>{servers.map(function (server) {
+            <td style={{whiteSpace: "nowrap"}} ><strong>{Math.round(servers.map(function (server) {
                 return server.cpu
-            }).reduce(summarize, 0)}</strong></td>
-            <td style={{whiteSpace: "nowrap"}} ><strong>{servers.map(function (server) {
+            }).reduce(summarize, 0))}</strong></td>
+            <td style={{whiteSpace: "nowrap"}} ><strong>{Math.round(servers.map(function (server) {
                 return server.memory
-            }).reduce(summarize, 0)} GB</strong></td>
-            <td style={{whiteSpace: "nowrap"}} ><strong>{servers.map(function (server) {
+            }).reduce(summarize, 0))} GB</strong></td>
+            <td style={{whiteSpace: "nowrap"}} ><strong>{Math.round(servers.map(function (server) {
                 return server.disk
-            }).reduce(summarize, 0)} GB</strong></td>
+            }).reduce(summarize, 0))} GB</strong></td>
         </tr>
     }
 });
