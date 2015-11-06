@@ -1,13 +1,17 @@
 var _ = require('lodash')
 
 var calcOsCost = function (osType, environmentClass) {
-    if (osType === 'rhel') {
+    if (!osType){
+        return 0
+    }
+
+    if (osType.indexOf('Linux') > -1) {
         if (environmentClass === 'p') {
             return 590
         } else {
             return 400
         }
-    } else if (osType === 'windows') {
+    } else if (osType.indexOf('Windows') > -1) {
         return 10000
     }
 }
@@ -26,6 +30,10 @@ var calcMWCost = function (type, environmentClass) {
 }
 
 var calcBaseCost = function (osType) {
+    if (!osType){
+        return 0
+    }
+
     if (osType.indexOf('Linux') > -1) {
         return 520
     } else if (osType.indexOf('Windows') > -1) {
