@@ -12,7 +12,7 @@ module.exports = Servers = React.createClass({
     getInitialState: function () {
         return {
             items: [],
-            itemRenderCount: 50,
+            itemRenderCount: 20,
             filters: this.emptyFilters
         };
     },
@@ -74,7 +74,7 @@ module.exports = Servers = React.createClass({
                         <SigmaRow servers={filteredServers} />
                     </tbody>
                 </table>
-                <button type="button" className="btn btn-link" onClick={this.viewMoreResults}>View more results...</button>
+                <button type="button" className={this.viewMoreResultsButtonClasses(filteredServers.length <= this.state.itemRenderCount)} onClick={this.viewMoreResults}>View more results...</button>
             </div>
         )
     },
@@ -188,7 +188,7 @@ module.exports = Servers = React.createClass({
     },
 
     viewMoreResults: function () {
-        this.setState({itemRenderCount: this.state.itemRenderCount + 50})
+        this.setState({itemRenderCount: this.state.itemRenderCount + 20})
     },
 
     clearFilters: function () {
@@ -199,6 +199,14 @@ module.exports = Servers = React.createClass({
         var filter = _.clone(this.state.filters, true);
         filter['regexp'] = !this.state.filters.regexp;
         this.setState({filters: filter});
+    },
+
+    viewMoreResultsButtonClasses: function (hide) {
+        return classString({
+            "btn": true,
+            "btn-link": true,
+            "hide": hide
+        })
     },
 
     regexpToggleButtonClasses: function () {
