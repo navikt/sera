@@ -74,7 +74,10 @@ module.exports = Servers = React.createClass({
                         <SigmaRow servers={filteredServers} />
                     </tbody>
                 </table>
-                <button type="button" className={this.viewMoreResultsButtonClasses(filteredServers.length <= this.state.itemRenderCount)} onClick={this.viewMoreResults}>View more results...</button>
+                <button type="button" className={this.showMoreResultsButtonClasses(filteredServers.length <= this.state.itemRenderCount)} onClick={this.viewMoreResults}>
+                   Show more results... <small>&nbsp; (showing {this.state.itemRenderCount > filteredServers.length ? filteredServers.length : this.state.itemRenderCount})</small>
+                </button>
+
             </div>
         )
     },
@@ -201,7 +204,7 @@ module.exports = Servers = React.createClass({
         this.setState({filters: filter});
     },
 
-    viewMoreResultsButtonClasses: function (hide) {
+    showMoreResultsButtonClasses: function (hide) {
         return classString({
             "btn": true,
             "btn-link": true,
