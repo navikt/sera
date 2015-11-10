@@ -117,12 +117,10 @@ var createServerObjects = function (objects) {
                     incomingValue = incomingValue.toLowerCase()
                 }
                 server[key] = incomingValue
+            } else {
+                server[key] = 'n/a'
             }
         })
-
-        if (!server.created){
-            server.created = 'n/a'
-        }
 
         return server
     }
@@ -133,7 +131,6 @@ var createServerObjects = function (objects) {
 }
 
 var returnCSVPayload = function (servers, res) {
-
     // dynamically create CSV mapping object (csv-header) based on js-object
     var createCSVMapping = function (servers) {
         var createMappingObject = function (item) {
