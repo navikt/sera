@@ -10,7 +10,7 @@ var baseJsonSchema = {
   'items': {
     'type': 'object',
     'properties': {},
-    'required': ['hostname', 'status']
+    'required': ['hostname', 'status', 'memory', 'cpu', 'disk', 'ipAddress', 'environmentClass']
   }
 }
 
