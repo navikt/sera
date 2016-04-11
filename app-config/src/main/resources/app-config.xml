@@ -7,7 +7,7 @@
     <artifacts/>
 
     <exposed-services>
-        <exposedRest name="servers_v1" description="Tjeneste for å registrere og hente servere" path="/version"/>
+        <exposedRest name="servers_v1" description="Tjeneste for å registrere og hente servere" path="/api/v1/servers"/>
     </exposed-services>
 
     <resources>
