@@ -4,7 +4,6 @@ var test = require('tape')
 var request = require('supertest')
 var mongoose = require('mongoose')
 var Server = require('../api/models/servermongo')
-var Unit = require('../api/models/unitmongo')
 var api = require('../api')
 var config = require('../api/config/config')
 
@@ -14,10 +13,6 @@ test('prepare server', function(t){
     Server.remove({}, function (err) {
         if (err) throw Error(err)
         console.log("deleted all servers");
-    })
-    Unit.remove({}, function (err) {
-        if (err) throw Error(err)
-        console.log("deleted all units");
     })
 
     t.end()
@@ -37,7 +32,7 @@ test('POST /api/v1/servers', function (t) {
 test('POST /api/v1/servers (same hostname as existing)', function (t) {
     request(api)
         .post('/api/v1/servers')
-        .send(createServerPayload(['a01apvl069.devillo.central']))
+        .send(createServerPayload(['a01apvl069.devillo.central', 'a01apvl069.devillo.central' ]))
         .end(function (err, res) {
             t.equals(res.status, 400, 'posting a new server with the same hostname as existing yields http 400')
             t.end()
@@ -65,20 +60,6 @@ test('GET /api/v1/servers', function (t) {
         })
 })
 
-test('DELETE /api/v1/servers/:hostname', function (t) {
-    request(api)
-        .delete('/api/v1/servers/a01apvl096.devillo.central')
-        .end(function (err, res) {
-            t.equals(res.status, 204, 'successfully performed delete operation yields 204')
-            request(api)
-                .get('/api/v1/servers?hostname=a01apvl096.devillo.central')
-                .end(function (err, res) {
-                    t.equals(res.body.length, 0, 'deletes single server')
-                    t.end()
-                })
-        })
-})
-
 test('GET /api/v1/servers?hostname=:hostname single', function (t) {
     request(api)
         .get('/api/v1/servers?hostname=a01apvl069.devillo')
@@ -90,26 +71,6 @@ test('GET /api/v1/servers?hostname=:hostname single', function (t) {
         })
 })
 
-test('GET servers, PUT unit, GET servers', function (t) {
-    request(api)
-        .get('/api/v1/servers?hostname=a01apvl069.devillo')
-        .end(function (err, res) {
-            t.equals(res.body[0].unit, '', 'unit is not returned for server when application is not in any unit')
-            request(api)
-                .put('/api/v1/units/aura')
-                .send({name: "aura", applications: ['sera']})
-                .end(function (err, res) {
-                    request(api)
-                        .get('/api/v1/servers?hostname=a01apvl069.devillo')
-                        .end(function (err, res) {
-                            console.log(res.body);
-                            t.equals(res.body[0].unit, 'aura', 'unit is returned for server when application is in unit')
-                            t.end()
-                        })
-                })
-
-        })
-})
 
 test('GET /api/v1/servers?hostname=blabla (nonexistent)', function (t) {
     request(api)
@@ -121,19 +82,7 @@ test('GET /api/v1/servers?hostname=blabla (nonexistent)', function (t) {
         })
 })
 
-test('DELETE /api/v1/servers', function (t) {
-    request(api)
-        .delete('/api/v1/servers')
-        .end(function (err, res) {
-            t.equals(res.status, 204, 'successfully performed delete operation yields 204')
-            request(api)
-                .get('/api/v1/servers')
-                .end(function (err, res) {
-                    t.equals(res.body.length, 0, 'successfully removed all servers')
-                    t.end()
-                })
-        })
-})
+
 
 test('cleanup servers', function(t){
     mongoose.connection.close()

@@ -1,30 +1,23 @@
+var request = require('request')
 var _ = require('lodash')
 var jsonToCSV = require('json-csv')
-var ServerDefinition = require('../models/server')
+
 var ServerMongoModel = require('../models/servermongo')
-var calculateServerCost = require('./costcalculator')
+var ServerDefinition = require('../models/server')
+
+
+
 
 exports.registerServers = function () {
     return function (req, res, next) {
         var validation = schemaValidateRequest(req.body)
-
         if (validation.errors.length > 0) {
             return res.status(400).send('JSON schema validation failed with the following errors: ' + validation.errors)
         }
-
-        var servers = createServerObjects(req.body)
-
-        ServerMongoModel.collection.insert(servers, function (err, docs) {
-            if (err) {
-                res.status(400).send(err.message)
-            } else {
-                res.status(201).send(docs.ops.length + ' servers created')
-            }
-        })
+        console.log("Received elements in request: ", req.body.length)
+        enrichElements(req.body, res)
     }
 }
-
-var enrichWith
 
 exports.getServers = function () {
     return function (req, res, next) {
@@ -33,52 +26,14 @@ exports.getServers = function () {
 
             servers = JSON.parse(JSON.stringify(servers)) // doc -> json
 
-            Unit.find({}, function (err, units) {
-                var serversWithUnit = enrichWithUnit(servers, units);
-                var serversWithCostAndUnit = serversWithUnit.map(calculateServerCost)
-
-                if (req.query.csv === 'true') {
-                    returnCSVPayload(serversWithCostAndUnit, res)
-                } else {
-                    res.header('Content-Type', 'application/json; charset=utf-8')
-                    res.json(serversWithCostAndUnit)
-                }
-            })
-        })
-    }
-}
-
-exports.deleteServers = function () {
-    return function (req, res, next) {
-        var query = (req.params.hostname) ? {hostname: req.params.hostname} : {}
-
-        ServerMongoModel.remove(query, function (err) {
-            if (err) {
-                return next(err)
+            if (req.query.csv === 'true') {
+                returnCSVPayload(servers, res)
             } else {
-                res.sendStatus(204)
+                res.header('Content-Type', 'application/json; charset=utf-8')
+                res.json(servers)
             }
         })
     }
-}
-
-var enrichWithUnit = function (servers, units) {
-    return servers.map(function (server) {
-        server['unit'] = '' // always set unit to something, enrich with actual unitname if match is found
-
-        var application = server.application;
-        if (!application) {
-            return server
-        }
-        units.forEach(function (unit) {
-            if (unit.applications.indexOf(application) > -1) {
-                server['unit'] = unit.name
-                return server
-            }
-        })
-
-        return server
-    });
 }
 
 var schemaValidateRequest = function (request) {
@@ -87,46 +42,149 @@ var schemaValidateRequest = function (request) {
     return validate(request, ServerJsonSchema)
 }
 
-var createMongoQueryFromRequest = function (request) {
-    var query = {}
+function enrichElements(incomingDataElements, incomingDataResponse) {
 
-    for (var queryParam in request) {
-        if (queryParam in ServerDefinition) {
-            if (ServerDefinition[queryParam].type === Number) {
-                query[queryParam] = request[queryParam]
-            } else {
-                query[queryParam] = new RegExp(request[queryParam], 'i')
-            }
-        } else {
-            continue
+    incomingDataElements.forEach(function(incomingDataElement){
+        if (!incomingDataElement.ipAddress){
+            incomingDataElement.ipAddress = "n/a"
         }
-    }
+    })
 
-    return query
-}
+    // Requesting all Node elements from Fasit
+    request({url: 'http://fasit.adeo.no/conf/nodes/',headers: {'Accept': 'application/json'}}, function (err, res, body) {
+        if (err) {
+            return console.error("Unable to retrieve data from Fasit", err)
+        } else {
+            var fasitData = JSON.parse(body)
+            console.log("Got data from fasit")
 
-var createServerObjects = function (objects) {
-    var createFromRequestObject = function (object) {
-        var server = {}
-
-        // picks properties from object based on the server object definition
-        _.forIn(ServerDefinition, function (value, key) {
-            var incomingValue = object[key]
-            if (incomingValue) {
-                if (ServerDefinition[key].schemaType === 'string') {
-                    incomingValue = incomingValue.toLowerCase()
+            var fasitEnrichedElements = incomingDataElements.map(function (incomingDataElement){
+                var fasitElement = fasitData.filter(function (fasitElement){
+                    return fasitElement.hostname === incomingDataElement.hostname
+                })
+                if (!(fasitElement.length == 0)){
+                    incomingDataElement.application = fasitElement[0].applicationMappingName;
+                    incomingDataElement.environmentName = fasitElement[0].environmentName;
+                    return incomingDataElement
+                } else if (!incomingDataElement.application){
+                    incomingDataElement.application = "n/a"
+                } else if (!incomingDataElement.environmentName){
+                    incomingDataElement.environmentName = "n/a"
                 }
-                server[key] = incomingValue
-            } else {
-                server[key] = 'n/a'
-            }
-        })
+                return incomingDataElement
+            })
+            console.log("Enriched elements with data from Fasit: ", fasitEnrichedElements.length)
 
-        return server
-    }
+            // Requesting calculations for all items from Coca
+            var cocaRequestData = buildCocaRequest(fasitEnrichedElements)
+            request({
+                method: "POST",
+                url: "http://coca.adeo.no/api/v1/calculator/",
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(cocaRequestData)
+            }, function (err, res, body){
+                if (err){
+                    return console.error("Unable to retrieve data from Coca", err)
+                } else {
+                    console.log("Got data from Coca")
+                    var cocaData = JSON.parse(body)
+                    var cocaEnrichedElements = fasitEnrichedElements.map(function (fasitEnrichedElement, index) {
+                        fasitEnrichedElement.calculations = cocaData[index].calculations
+                        return fasitEnrichedElement
+                    })
+                    console.log("Enriched elements with data from Coca: ", cocaEnrichedElements.length)
 
-    return objects.map(function (obj) {
-        return createFromRequestObject(obj)
+                    // Requesting Application to Organization mapping from NORA
+                    request({url: 'http://nora.adeo.no/api/v1/units',headrs: {'Accept': 'application/json'}}, function (err, res, body){
+                        if (err){
+                            return console.error("Unable to retrieve data from Nora", err)
+                        } else {
+                            console.log("Got data from Nora")
+                            var units = JSON.parse(body)
+                            var noraEnrichedElements = cocaEnrichedElements.map(function (cocaEnrichedElement) {
+                                var application = cocaEnrichedElement.application
+                                if (!application) {
+                                    cocaEnrichedElement.unit = 'n/a'
+                                    return cocaEnrichedElement
+                                }
+                                units.forEach(function (unit) {
+                                    if (unit.applications.indexOf(application) > -1) {
+                                        cocaEnrichedElement.unit = unit.name
+                                        return cocaEnrichedElement
+                                    }
+                                })
+
+                                return cocaEnrichedElement
+                            });
+                            console.log("Enriched elements with data from Nora: ", noraEnrichedElements.length)
+
+                            // Clear Sera Database
+                            ServerMongoModel.remove({}, function (err) {
+                                if (err) {
+                                    console.log("Unable to clear Sera Database:", err)
+                                } else {
+                                    console.log("Sera Database cleared")
+
+                                    // Save elements to database
+                                    ServerMongoModel.collection.insert(noraEnrichedElements, function (err, docs) {
+                                        if (err) {
+                                            console.log(err.message)
+                                        } else {
+                                            console.log(docs.ops.length + ' servers created')
+                                            incomingDataResponse.status(201).send(docs.ops.length + " servers created")
+                                        }
+                                    })
+
+                                }
+                            })
+                        }
+
+                    })
+
+                }
+
+            })
+        }
+    })
+}
+var buildCocaRequest = function (elements){
+    var returnTypeFromOS = function (os) {
+        if (os.match(/2008/g)){
+            return 'win2008'
+        } else if (os.match(/2012/g)){
+            return 'win2012'
+        } else if (os.match(/red hat/g || os.match(/rhel/g))){
+            return 'rhel6'
+        } else {
+            return 'appliance'
+        }
+    };
+    return elements.map(function (element){
+        var costElement = {}
+        costElement.cpu = element.cpu;
+        costElement.memory = element.memory;
+        costElement.environment = element.environmentClass;
+        var validTypes = ['jboss', 'was', 'was_dmgr', 'bpm', 'bpm_dmgr', 'liberty', 'wildfly']
+        if (_.contains(validTypes, element.type)) {
+            costElement.type = element.type;
+        } else {
+            costElement.type = returnTypeFromOS(element.os)
+        }
+
+        if (element.custom) {
+            costElement.classification = "custom";
+        } else {
+            costElement.classification = "standard";
+        }
+
+        var itcamEnvironments = ['p', 'q0', 'q1', 'q3', 't3']
+        if (_.contains(itcamEnvironments, element.environmentName)){
+            costElement.scapm = true
+        }
+        return costElement
+
+
+
     })
 }
 
@@ -152,4 +210,22 @@ var returnCSVPayload = function (servers, res) {
         res.header('Content-Type', 'text/plain; charset=utf-8')
         res.send(csv)
     })
+}
+
+var createMongoQueryFromRequest = function (request) {
+    var query = {}
+
+    for (var queryParam in request) {
+        if (queryParam in ServerDefinition) {
+            if (ServerDefinition[queryParam].type === Number) {
+                query[queryParam] = request[queryParam]
+            } else {
+                query[queryParam] = new RegExp(request[queryParam], 'i')
+            }
+        } else {
+            continue
+        }
+    }
+
+    return query
 }
