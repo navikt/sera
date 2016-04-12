@@ -16,6 +16,23 @@ exports.registerServers = function () {
     }
 }
 
+exports.getServers = function () {
+    return function (req, res, next) {
+        ServerMongoModel.find(createMongoQueryFromRequest(req.query), function (err, servers) {
+            if (err) return next(err)
+
+            servers = JSON.parse(JSON.stringify(servers)) // doc -> json
+
+            if (req.query.csv === 'true') {
+                returnCSVPayload(servers, res)
+            } else {
+                res.header('Content-Type', 'application/json; charset=utf-8')
+                res.json(servers)
+            }
+        })
+    }
+}
+
 var schemaValidateRequest = function (request) {
     var validate = require('jsonschema').validate
     var ServerJsonSchema = require('../models/serverschema')
@@ -23,6 +40,12 @@ var schemaValidateRequest = function (request) {
 }
 
 function enrichElements(incomingDataElements) {
+
+    incomingDataElements.forEach(function(incomingDataElement){
+        if (!incomingDataElement.ipAddress){
+            incomingDataElement.ipAddress = "n/a"
+        }
+    })
 
     // Requesting all Node elements from Fasit
     request({url: 'http://fasit.adeo.no/conf/nodes/',headers: {'Accept': 'application/json'}}, function (err, res, body) {
@@ -53,7 +76,7 @@ function enrichElements(incomingDataElements) {
             var cocaRequestData = buildCocaRequest(fasitEnrichedElements)
             request({
                 method: "POST",
-                url: "http://localhost:8444/api/v1/calculator/",
+                url: "http://coca.adeo.no/api/v1/calculator/",
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(cocaRequestData)
             }, function (err, res, body){
@@ -76,15 +99,14 @@ function enrichElements(incomingDataElements) {
                             console.log("Got data from Nora")
                             var units = JSON.parse(body)
                             var noraEnrichedElements = cocaEnrichedElements.map(function (cocaEnrichedElement) {
-                                cocaEnrichedElement['unit'] = '' // always set unit to something, enrich with actual unitname if match is found
-
-                                var application = cocaEnrichedElement.application;
+                                var application = cocaEnrichedElement.application
                                 if (!application) {
+                                    cocaEnrichedElement.unit = 'n/a'
                                     return cocaEnrichedElement
                                 }
                                 units.forEach(function (unit) {
                                     if (unit.applications.indexOf(application) > -1) {
-                                        cocaEnrichedElement['unit'] = unit.name
+                                        cocaEnrichedElement.unit = unit.name
                                         return cocaEnrichedElement
                                     }
                                 })
@@ -158,4 +180,46 @@ var buildCocaRequest = function (elements){
 
 
     })
+}
+
+var returnCSVPayload = function (servers, res) {
+    // dynamically create CSV mapping object (csv-header) based on js-object
+    var createCSVMapping = function (servers) {
+        var createMappingObject = function (item) {
+            var mappingObjectArray = []
+            for (var key in item) {
+                mappingObjectArray.push({name: key, label: key})
+            }
+            return mappingObjectArray
+        }
+
+        return {fields: createMappingObject(servers[0])}
+    }
+
+    jsonToCSV.csvBuffered(servers, createCSVMapping(servers), function (err, csv) {
+        if (err) {
+            res.statusCode = 500
+            throw new Error(err)
+        }
+        res.header('Content-Type', 'text/plain; charset=utf-8')
+        res.send(csv)
+    })
+}
+
+var createMongoQueryFromRequest = function (request) {
+    var query = {}
+
+    for (var queryParam in request) {
+        if (queryParam in ServerDefinition) {
+            if (ServerDefinition[queryParam].type === Number) {
+                query[queryParam] = request[queryParam]
+            } else {
+                query[queryParam] = new RegExp(request[queryParam], 'i')
+            }
+        } else {
+            continue
+        }
+    }
+
+    return query
 }
