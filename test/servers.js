@@ -8,7 +8,7 @@ var api = require('../api')
 var config = require('../api/config/config')
 
 test('prepare server', function(t){
-    mongoose.connect(config.dbUrl)
+    mongoose.createConnection(config.dbUrl)
 
     Server.remove({}, function (err) {
         if (err) throw Error(err)
