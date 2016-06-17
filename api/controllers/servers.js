@@ -41,7 +41,6 @@ var schemaValidateRequest = function (request) {
 }
 
 function enrichElements(incomingDataElements, incomingDataResponse) {
-
     incomingDataElements.forEach(function(incomingDataElement){
         if (!incomingDataElement.ipAddress){
             incomingDataElement.ipAddress = "n/a"
