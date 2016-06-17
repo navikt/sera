@@ -9,5 +9,5 @@ var port = require('./api/config/config').port
 server.use(express.static(__dirname + "/frontend/build"));
 
 server.listen(port, function () {
-  console.log('RDY 4 EBIZ @ %d', port)
+  console.log('RDY 4 EBIZNIZ @ %d', port)
 })
