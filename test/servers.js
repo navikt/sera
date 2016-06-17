@@ -1,19 +1,22 @@
 'use strict'
 
 var test = require('tape')
+var nock = require('nock')
 var request = require('supertest')
 var mongoose = require('mongoose')
 var Server = require('../api/models/servermongo')
-var api = require('../api')
 var config = require('../api/config/config')
+var api = require('../api')
 
-test('prepare server', function(t){
-    mongoose.createConnection(config.dbUrl)
+test('prepare server', function (t) {
+    mongoose.connect(config.dbUrl)
 
     Server.remove({}, function (err) {
         if (err) throw Error(err)
         console.log("deleted all servers");
     })
+
+    initMocks();
 
     t.end()
 })
@@ -32,7 +35,7 @@ test('POST /api/v1/servers', function (t) {
 test('POST /api/v1/servers (same hostname as existing)', function (t) {
     request(api)
         .post('/api/v1/servers')
-        .send(createServerPayload(['a01apvl069.devillo.central', 'a01apvl069.devillo.central' ]))
+        .send(createServerPayload(['a01apvl069.devillo.central', 'a01apvl069.devillo.central']))
         .end(function (err, res) {
             t.equals(res.status, 400, 'posting a new server with the same hostname as existing yields http 400')
             t.end()
@@ -83,8 +86,7 @@ test('GET /api/v1/servers?hostname=blabla (nonexistent)', function (t) {
 })
 
 
-
-test('cleanup servers', function(t){
+test('cleanup servers', function (t) {
     mongoose.connection.close()
     t.end()
 })
@@ -109,4 +111,81 @@ var createServerPayload = function (hostnames) {
             environmentClass: 'p'
         }
     })
+}
+
+function initMocks() {
+    var fasit = nock('https://fasit.adeo.no/conf')
+        .get('/nodes')
+        .reply(200,
+            [
+                {
+                    "ref": "https://fasit.adeo.no/conf/nodes/b27wasl00113.preprod.local",
+                    "hostname": "b27wasl00113.preprod.local",
+                    "ipAddress": "10.53.90.157",
+                    "environmentName": "q0",
+                    "environmentClass": "q",
+                    "applicationMappingName": "applikasjonsgruppe:gsak og gsynk",
+                    "applicationName": [
+                        "gsak",
+                        "gsynk"
+                    ],
+                    "username": "deployer",
+                    "name": null,
+                    "zone": null,
+                    "domain": "PreProd",
+                    "passwordRef": "https://fasit.adeo.no/conf/secrets/secret-371152",
+                    "password": null,
+                    "platformType": "WAS",
+                    "status": null,
+                    "accessAdGroup": null,
+                    "httpsPort": 0,
+                    "shortName": "b27wasl00113"
+                }]
+        );
+
+
+    var coca = nock('http://coca.adeo.no/api')
+        .post('/v1/calculator/')
+        .reply(200,
+            [{
+                "type": "appliance",
+                "environment": "p",
+                "count": 1,
+                "total": 7848,
+                "calculations": {
+                    "esx": 176,
+                    "blade": 114,
+                    "backup": 1250,
+                    "memory": 1488,
+                    "cpu": 320,
+                    "classification": 4500,
+                    "os": 0,
+                    "disk": 0
+                }
+            }, {
+                "type": "appliance",
+                "environment": "p",
+                "count": 1,
+                "total": 7848,
+                "calculations": {
+                    "esx": 176,
+                    "blade": 114,
+                    "backup": 1250,
+                    "memory": 1488,
+                    "cpu": 320,
+                    "classification": 4500,
+                    "os": 0,
+                    "disk": 0
+                }
+            }]
+        );
+
+    var nora = nock('http://nora.adeo.no/api')
+        .get('/v1/units')
+        .reply(200,
+            [{
+                "name": "unit69",
+                "applications": ["a", "b", "c"]
+            }]
+        );
 }

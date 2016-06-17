@@ -4,9 +4,7 @@ var jsonToCSV = require('json-csv')
 
 var ServerMongoModel = require('../models/servermongo')
 var ServerDefinition = require('../models/server')
-
-
-
+var config = require('../config/config')
 
 exports.registerServers = function () {
     return function (req, res, next) {
@@ -51,7 +49,7 @@ function enrichElements(incomingDataElements, incomingDataResponse) {
     })
 
     // Requesting all Node elements from Fasit
-    request({url: 'http://fasit.adeo.no/conf/nodes/',headers: {'Accept': 'application/json'}}, function (err, res, body) {
+    request({url: config.fasitNodesUrl, headers: {'Accept': 'application/json'}}, function (err, res, body) {
         if (err) {
             return console.error("Unable to retrieve data from Fasit", err)
         } else {
@@ -77,9 +75,10 @@ function enrichElements(incomingDataElements, incomingDataResponse) {
 
             // Requesting calculations for all items from Coca
             var cocaRequestData = buildCocaRequest(fasitEnrichedElements)
+
             request({
                 method: "POST",
-                url: "http://coca.adeo.no/api/v1/calculator/",
+                url: config.cocaUrl,
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(cocaRequestData)
             }, function (err, res, body){
@@ -95,7 +94,7 @@ function enrichElements(incomingDataElements, incomingDataResponse) {
                     console.log("Enriched elements with data from Coca: ", cocaEnrichedElements.length)
 
                     // Requesting Application to Organization mapping from NORA
-                    request({url: 'http://nora.adeo.no/api/v1/units',headrs: {'Accept': 'application/json'}}, function (err, res, body){
+                    request({url: config.noraUrl, headers: {'Accept': 'application/json'}}, function (err, res, body){
                         if (err){
                             return console.error("Unable to retrieve data from Nora", err)
                         } else {
@@ -134,15 +133,11 @@ function enrichElements(incomingDataElements, incomingDataResponse) {
                                             incomingDataResponse.status(201).send(docs.ops.length + " servers created")
                                         }
                                     })
-
                                 }
                             })
                         }
-
                     })
-
                 }
-
             })
         }
     })
