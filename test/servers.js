@@ -9,7 +9,7 @@ var config = require('../api/config/config')
 var api = require('../api')
 
 test('prepare server', function (t) {
-    mongoose.connect(config.dbUrl)
+    mongoose.createConnection(config.dbUrl)
 
     Server.remove({}, function (err) {
         if (err) throw Error(err)
@@ -87,7 +87,7 @@ test('GET /api/v1/servers?hostname=blabla (nonexistent)', function (t) {
 
 
 test('cleanup servers', function (t) {
-    mongoose.connection.close()
+    mongoose.disconnect()
     t.end()
 })
 
