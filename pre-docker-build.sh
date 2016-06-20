@@ -16,8 +16,7 @@ tar xzfv nodejs-0.10.33-with-deps.el7.x86_64.tar.gz -C $DOCKERDIR/nodejs
 cd $DISTDIR && cp ../../package.json . && npm install --production && rm -f package.json && cd -
 
 npm install
-sudo -E npm install gulp -g
-gulp dist || exit 1
+node ./node_modules/gulp/bin/gulp.js dist || exit 1
 
 cp -r dist $DOCKERDIR
 cp Dockerfile $DOCKERDIR
