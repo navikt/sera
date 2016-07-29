@@ -1,10 +1,8 @@
-FROM docker.adeo.no:5000/centos:7
+FROM docker.adeo.no:5000/alpine-node:base-6.3.1
 MAINTAINER Johnny Horvi <johnny.horvi@nav.no>
 
-COPY nodejs /tmp/nodejs
-RUN yum install -y /tmp/nodejs/*.rpm
-
-COPY dist /opt/sera
+WORKDIR /src
+ADD ./dist .
 
 EXPOSE 8443
-CMD ["node", "/opt/sera/server.js"]
+CMD ["node", "server.js"]

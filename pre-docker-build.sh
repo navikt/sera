@@ -1,24 +1,23 @@
 #!/bin/bash
 
+DOCKERDIR=$(dirname $0)docker
+DISTDIR=${DOCKERDIR}/dist
+
 # prepares a docker directory for build
+rm -rf ${DOCKERDIR}
+mkdir -p ${DISTDIR}
 
-BASEDIR=$(dirname $0)
-DOCKERDIR=$BASEDIR/docker
-DISTDIR=$DOCKERDIR/dist
+# include backend in dist
+cp -r server.js api ${DISTDIR}
 
-rm -rf $DOCKERDIR
-mkdir -p $DOCKERDIR/nodejs
-mkdir -p $DISTDIR
+# install the application dependencies
+cd ${DISTDIR} && cp ../../package.json . && npm install --production && cd -
 
-curl -O http://utviklerportalen.adeo.no/software/nodejs/nodejs-0.10.33-with-deps.el7.x86_64.tar.gz
-tar xzfv nodejs-0.10.33-with-deps.el7.x86_64.tar.gz -C $DOCKERDIR/nodejs
+# init build-tool and build the frontend
+npm install && node ./node_modules/gulp/bin/gulp.js dist || exit 1
 
-cd $DISTDIR && cp ../../package.json . && npm install --production && rm -f package.json && cd -
+# include frontend in dist
+cp -r dist ${DOCKERDIR}
 
-npm install
-node ./node_modules/gulp/bin/gulp.js dist || exit 1
+cp Dockerfile ${DOCKERDIR}
 
-cp -r dist $DOCKERDIR
-cp Dockerfile $DOCKERDIR
-
-cp -r server.js api $DISTDIR
