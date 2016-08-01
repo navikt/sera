@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOCKERDIR=$(dirname $0)docker
+DOCKERDIR=$(dirname $0)/docker
 DISTDIR=${DOCKERDIR}/dist
 
 # prepares a docker directory for build
