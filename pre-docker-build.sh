@@ -20,3 +20,4 @@ npm install && node ./node_modules/gulp/bin/gulp.js dist || exit 1
 cp -r dist ${DOCKERDIR}
 
 cp Dockerfile ${DOCKERDIR}
+
