@@ -8,6 +8,7 @@ var config = require('./api/config/config')
 
 // serve static html
 app.use(express.static(__dirname + "/frontend/build"));
+
 var httpsServer = https.createServer({
     key: fs.readFileSync(config.tlsPrivateKey),
     cert: fs.readFileSync(config.tlsCert)
