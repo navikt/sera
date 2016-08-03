@@ -34,7 +34,7 @@ gulp.task('compile-js', function () {
         .transform(reactify)
         .bundle()
         .on('error', handleError)
-        .pipe(source('vera.js'))
+        .pipe(source('sera.js'))
         .pipe(buffer())
         .pipe(gulpif(env === 'production', uglify()))
         .pipe(size())
