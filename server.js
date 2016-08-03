@@ -1,13 +1,18 @@
 'use strict'
 
+var https = require('https')
+var fs = require('fs')
 var express = require('express')
-var app = express()
-var server = require('./api')
-var port = require('./api/config/config').port
+var app = require('./api')
+var config = require('./api/config/config')
 
 // serve static html
-server.use(express.static(__dirname + "/frontend/build"));
+app.use(express.static(__dirname + "/frontend/build"));
+var httpsServer = https.createServer({
+    key: fs.readFileSync(config.tlsPrivateKey),
+    cert: fs.readFileSync(config.tlsCert)
+}, app);
 
-server.listen(port, function () {
-  console.log('RDY 4 EBIZNIZ @ %d', port)
+httpsServer.listen(config.port, function () {
+    console.log('running on port %d', config.port)
 })

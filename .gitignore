@@ -38,6 +38,7 @@ node_modules
 
 app-config/target
 
+*.crt
 *.pem
 *.key
 dist
