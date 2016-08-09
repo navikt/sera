@@ -6,4 +6,5 @@ module.exports = function (app) {
     app.get('/api/v1/servers', servers.getServers())
 
     app.get('/metrics', metrics.getMetrics())
+    app.get('/isalive', metrics.isAlive())
 }
