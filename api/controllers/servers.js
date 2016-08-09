@@ -74,6 +74,8 @@ function enrichElements(incomingDataElements, incomingDataResponse) {
 
             // Requesting calculations for all items from Coca
             var cocaRequestData = buildCocaRequest(fasitEnrichedElements)
+            console.log("CocaRequestData:", cocaRequestData)
+            console.log("cocaUrl:", config.cocaUrl)
 
             request({
                 method: "POST",
