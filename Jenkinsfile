@@ -63,14 +63,15 @@ pipeline {
         }
 
         stage("build frontend bundle") {
-            script {
-                sh "cd ${distDir} && cp ../../package.json . && npm install --production && cd -" // getting required node_modules for production
-                sh "npm install &&  node ./node_modules/gulp/bin/gulp.js dist || exit 1" // Creating frontend bundle
-                sh "cp -r dist ${dockerDir}" // Copying frontend bundle
-                sh "cp Dockerfile ${dockerDir}"
+            withEnv(['HTTP_PROXY=http://webproxy-utvikler.nav.no:8088', 'NO_PROXY=adeo.no']) {
+                script {
+                    sh "cd ${distDir} && cp ../../package.json . && ${npm} install --production && cd -" // getting required node_modules for production
+                    sh "${npm} install &&  ${node} ./node_modules/gulp/bin/gulp.js dist || exit 1" // Creating frontend bundle
+                    sh "cp -r dist ${dockerDir}" // Copying frontend bundle
+                    sh "cp Dockerfile ${dockerDir}"
+                }
             }
         }
-
         stage("build and publish docker image") {
             script {
                 def imageName = "docker.adeo.no:5000/${application}:${releaseVersion}"
