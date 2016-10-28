@@ -3,6 +3,7 @@ def committer, lastcommit, releaseVersion // metadata
 def application = "sera"
 def dockerDir = "./docker"
 def distDir = "${dockerDir}/dist"
+def devServer = "https://e34apvl00024.devillo.no:8445"
 
 pipeline {
     agent label: ""
@@ -90,9 +91,19 @@ pipeline {
             }
         }
 
-        stage("deploy") {
+        stage("deploy to cd-u1") {
             withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'srvauraautodeploy', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
                 sh "${mvn} aura:deploy -Dapps=${application}:${releaseVersion} -Denv=cd-u1 -Dusername=${env.USERNAME} -Dpassword=${env.PASSWORD} -Dorg.slf4j.simpleLogger.log.no.nav=debug -B -Ddebug=true -e"
+            }
+        }
+
+        stage("Verify selftest in test environment") {
+            sh "if [ \$(curl -s --insecure -o /dev/null -I -w \"%{http_code}\" ${devServer}/api/v1/servers) != 200 ]; then echo \"Rest API doesn't seem to work\"; exit 1; fi"
+        }
+
+        stage("deploy to production") {
+            withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'srvauraautodeploy', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+                sh "${mvn} aura:deploy -Dapps=${application}:${releaseVersion} -Denv=p -Dusername=${env.USERNAME} -Dpassword=${env.PASSWORD} -Dorg.slf4j.simpleLogger.log.no.nav=debug -B -Ddebug=true -e"
             }
         }
     }
