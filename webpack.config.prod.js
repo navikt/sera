@@ -9,7 +9,7 @@ module.exports = {
     ],
     output: {
         path: path.join(__dirname, 'dist'),
-        filename: 'fasit.js',
+        filename: 'sera.js',
         publicPath: '/'
     },
     plugins: [
