@@ -32,7 +32,7 @@ if (process.env.NODE_ENV === 'production') {
         transports: [
             new winston.transports.File({
                 level: 'info',
-                filename: './logs/all-logs.log',
+                filename: './logs.log',
                 handleExceptions: true,
                 json: false,
                 maxsize: 5242880, //5MB

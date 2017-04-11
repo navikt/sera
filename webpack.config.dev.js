@@ -16,10 +16,9 @@ module.exports = {
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoErrorsPlugin(),
+        // new webpack.NoErrorsPlugin(),
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify('development')
-
         }),
     ],
     module: {
@@ -39,7 +38,7 @@ module.exports = {
             {
                 test: /\.less$/,
                 include: [__dirname, "frontend/src/stylesheets"],
-                loader: "style!css!less"
+                loader: "style-loader!css-loader!less-loader"
             },
             {
                 test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
@@ -49,4 +48,5 @@ module.exports = {
 
         ]
     }
+
 };

@@ -4,7 +4,6 @@ import AuraToolsPopover from './auratoolspopover.js'
 
 export default class TopNav extends React.Component {
 
-
     render() {
         return (
             <div className="sera-topnav-container">
