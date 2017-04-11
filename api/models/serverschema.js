@@ -21,6 +21,7 @@ var enrichWithServerDefinition = function (baseJsonSchema, serverDefinition) {
     jsonSchema.items.properties[key] = {type: serverDefinition[key].schemaType}
   }
 
+
   return jsonSchema
 }
 

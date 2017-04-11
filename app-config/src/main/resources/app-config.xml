@@ -13,7 +13,12 @@
     </exposed-services>
 
     <resources>
-        <datasource alias="seraDb" mapToProperty="seraDb"/>
+        <datasource alias="seraDb" />
+        <rest alias="costService" />
+        <rest alias="units_v1" />
+        <rest alias="fasit:nodes_v2" />
+        <baseUrl alias="influxdb" />
+        <credential alias="influxdb" />
     </resources>
 
     <monitoring>

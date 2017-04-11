@@ -1,10 +1,15 @@
-var request = require('request')
-var _ = require('lodash')
-var jsonToCSV = require('json-csv')
+const request = require('request')
+const _ = require('lodash')
+const jsonToCSV = require('json-csv')
+const mongoose = require('mongoose')
+const ServerMongoModel = require('../models/servermongo')
+const ServerDefinition = require('../models/server')
+const timestamp = require('../controllers/timestamp')
+const influx = require('./influx')
+const mongo = require('./mongo')
+const config = require('../config/config')
+const logger = require('../logger')
 
-var ServerMongoModel = require('../models/servermongo')
-var ServerDefinition = require('../models/server')
-var config = require('../config/config')
 
 exports.registerServers = function () {
     return function (req, res, next) {
@@ -12,7 +17,7 @@ exports.registerServers = function () {
         if (validation.errors.length > 0) {
             return res.status(400).send('JSON schema validation failed with the following errors: ' + validation.errors)
         }
-        console.log("Received elements in request: ", req.body.length)
+        logger.info("Received elements in request: ", req.body.length)
         enrichElements(req.body, res)
     }
 }
@@ -41,9 +46,13 @@ var schemaValidateRequest = function (request) {
 }
 
 function enrichElements(incomingDataElements, incomingDataResponse) {
-    incomingDataElements.forEach(function(incomingDataElement){
-        if (!incomingDataElement.ipAddress){
-            incomingDataElement.ipAddress = "n/a"
+    incomingDataElements.forEach(function (incomingDataElement) {
+        if (incomingDataElement.Notes2) {
+            incomingDataElement.notes = incomingDataElement.Notes2 // change key Notes to notes
+            delete incomingDataElement.Notes2
+        } else if (incomingDataElement.Notes) {
+            incomingDataElement.notes = incomingDataElement.Notes // change key Notes2 to notes
+            delete incomingDataElement.Notes
         }
     })
 
@@ -53,24 +62,24 @@ function enrichElements(incomingDataElements, incomingDataResponse) {
             return console.error("Unable to retrieve data from Fasit", err)
         } else {
             var fasitData = JSON.parse(body)
-            console.log("Got data from fasit")
+            logger.info("Got data from fasit")
 
-            var fasitEnrichedElements = incomingDataElements.map(function (incomingDataElement){
-                var fasitElement = fasitData.filter(function (fasitElement){
+            var fasitEnrichedElements = incomingDataElements.map(function (incomingDataElement) {
+                var fasitElement = fasitData.filter(function (fasitElement) {
                     return fasitElement.hostname === incomingDataElement.hostname
                 })
-                if (!(fasitElement.length == 0)){
+                if (!(fasitElement.length == 0)) {
                     incomingDataElement.application = fasitElement[0].applicationMappingName;
                     incomingDataElement.environmentName = fasitElement[0].environmentName;
                     return incomingDataElement
-                } else if (!incomingDataElement.application){
+                } else if (!incomingDataElement.application) {
                     incomingDataElement.application = "n/a"
-                } else if (!incomingDataElement.environmentName){
+                } else if (!incomingDataElement.environmentName) {
                     incomingDataElement.environmentName = "n/a"
                 }
                 return incomingDataElement
             })
-            console.log("Enriched elements with data from Fasit: ", fasitEnrichedElements.length)
+            logger.info("Enriched elements with data from Fasit: ", fasitEnrichedElements.length)
 
             // Requesting calculations for all items from Coca
             var cocaRequestData = buildCocaRequest(fasitEnrichedElements)
@@ -80,24 +89,24 @@ function enrichElements(incomingDataElements, incomingDataResponse) {
                 url: config.cocaUrl,
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(cocaRequestData)
-            }, function (err, res, body){
-                if (err){
-                    return console.error("Unable to retrieve data from Coca", err)
+            }, function (err, res, body) {
+                if (err) {
+                    return logger.error("Unable to retrieve data from Coca", err)
                 } else {
-                    console.log("Got data from Coca")
+                    logger.info("Got data from Coca")
                     var cocaData = JSON.parse(body)
                     var cocaEnrichedElements = fasitEnrichedElements.map(function (fasitEnrichedElement, index) {
                         fasitEnrichedElement.calculations = cocaData[index].calculations
                         return fasitEnrichedElement
                     })
-                    console.log("Enriched elements with data from Coca: ", cocaEnrichedElements.length)
+                    logger.info("Enriched elements with data from Coca: ", cocaEnrichedElements.length)
 
                     // Requesting Application to Organization mapping from NORA
-                    request({url: config.noraUrl, headers: {'Accept': 'application/json'}}, function (err, res, body){
-                        if (err){
-                            return console.error("Unable to retrieve data from Nora", err)
+                    request({url: config.noraUrl, headers: {'Accept': 'application/json'}}, function (err, res, body) {
+                        if (err) {
+                            return logger.error("Unable to retrieve data from Nora", err)
                         } else {
-                            console.log("Got data from Nora")
+                            logger.info("Got data from Nora")
                             var units = JSON.parse(body)
                             var noraEnrichedElements = cocaEnrichedElements.map(function (cocaEnrichedElement) {
                                 var application = cocaEnrichedElement.application
@@ -111,29 +120,15 @@ function enrichElements(incomingDataElements, incomingDataResponse) {
                                         return cocaEnrichedElement
                                     }
                                 })
-
                                 return cocaEnrichedElement
                             });
-                            console.log("Enriched elements with data from Nora: ", noraEnrichedElements.length)
+                            logger.info("Enriched elements with data from Nora: ", noraEnrichedElements.length)
 
-                            // Clear Sera Database
-                            ServerMongoModel.remove({}, function (err) {
-                                if (err) {
-                                    console.log("Unable to clear Sera Database:", err)
-                                } else {
-                                    console.log("Sera Database cleared")
+                            /////////////////Henter metrics her//////////////////
 
-                                    // Save elements to database
-                                    ServerMongoModel.collection.insert(noraEnrichedElements, function (err, docs) {
-                                        if (err) {
-                                            console.log(err.message)
-                                        } else {
-                                            console.log(docs.ops.length + ' servers created')
-                                            incomingDataResponse.status(201).send(docs.ops.length + " servers created")
-                                        }
-                                    })
-                                }
-                            })
+                            influx.enrichWithDataFromInflux(noraEnrichedElements, mongo.updateDatabase, incomingDataResponse)
+
+
                         }
                     })
                 }
@@ -141,19 +136,19 @@ function enrichElements(incomingDataElements, incomingDataResponse) {
         }
     })
 }
-var buildCocaRequest = function (elements){
+var buildCocaRequest = function (elements) {
     var returnTypeFromOS = function (os) {
-        if (os.match(/2008/g)){
+        if (os.match(/2008/g)) {
             return 'win2008'
-        } else if (os.match(/2012/g)){
+        } else if (os.match(/2012/g)) {
             return 'win2012'
-        } else if (os.match(/red hat/g || os.match(/rhel/g))){
+        } else if (os.match(/red hat/g || os.match(/rhel/g))) {
             return 'rhel6'
         } else {
             return 'appliance'
         }
     };
-    return elements.map(function (element){
+    return elements.map(function (element) {
         var costElement = {}
         costElement.cpu = element.cpu;
         costElement.memory = element.memory;
@@ -172,11 +167,10 @@ var buildCocaRequest = function (elements){
         }
 
         var itcamEnvironments = ['p', 'q0', 'q1', 'q3', 't3']
-        if (_.contains(itcamEnvironments, element.environmentName)){
+        if (_.contains(itcamEnvironments, element.environmentName)) {
             costElement.scapm = true
         }
         return costElement
-
 
 
     })
@@ -223,3 +217,4 @@ var createMongoQueryFromRequest = function (request) {
 
     return query
 }
+

@@ -1,5 +1,5 @@
-var _ = require('lodash')
-var Server = require('../models/servermongo')
+const _ = require('lodash')
+const Server = require('../models/servermongo')
 
 exports.getMetrics = function () {
     return function (req, res, next) {

@@ -1,12 +1,29 @@
 'use strict'
+const path = require('path')
+const https = require('https')
+const fs = require('fs')
+const express = require('express')
+const app = require('./api')
+const config = require('./api/config/config')
+const webpackConfig = require('./webpack.config.dev.js')
+const webpack = require('webpack')
+const logger = require('./api/logger')
 
-var https = require('https')
-var fs = require('fs')
-var express = require('express')
-var app = require('./api')
-var config = require('./api/config/config')
+const serverOptions = {
+    quiet: false,
+    noInfo: false,
+    hot: true,
+    inline: true,
+    lazy: false,
+    publicPath: webpackConfig.output.publicPath,
+    stats: {colors: true},
+    historyApiFallback: true
+};
 
-// serve static html
+const compiler = webpack(webpackConfig);
+
+app.use(require('webpack-dev-middleware')(compiler, serverOptions));
+app.use(require('webpack-hot-middleware')(compiler));
 app.use(express.static(__dirname + "/frontend/build"));
 
 var httpsServer = https.createServer({
@@ -15,5 +32,7 @@ var httpsServer = https.createServer({
 }, app);
 
 httpsServer.listen(config.port, function () {
-    console.log('running on port %d', config.port)
-}) 
+    logger.info('==> Up and running @ %s', config.port)
+});
+
+module.exports = app;
