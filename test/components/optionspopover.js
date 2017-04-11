@@ -1,8 +1,6 @@
-import 'jsdom-global/register';
 import React from 'react'
 import { shallow } from 'enzyme';
 import { expect } from 'chai'
-import sinon from 'sinon';
 import OptionsPopover from '../../frontend/src/js/components/optionspopover'
 
 
