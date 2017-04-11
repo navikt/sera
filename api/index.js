@@ -1,39 +1,53 @@
-var express = require('express')
-var app = express()
-var bodyParser = require('body-parser')
-var morgan = require('morgan')
-var mongoose = require('mongoose')
-var config = require('./config/config')
+const express = require('express')
+const app = express()
+const bodyParser = require('body-parser')
+const mongoose = require('mongoose')
+const config = require('./config/config')
+const logger = require('./logger')
 
-var cors = function (req, res, next) {
-    res.setHeader("Access-Control-Allow-Origin", "*");
+const cors = function (req, res, next) {
+    res.setHeader("Access-Control-Allow-Origin", "*")
     return next();
 };
+logger.debug("Overriding, 'Express' logger");
+app.use(require('morgan')('short', {stream: logger.stream}))
 
 app.use(cors)
 
 app.use(bodyParser.json({type: '*/*', limit: '50mb'}))
-app.use(morgan('combined'))
 require('./config/routes')(app)
 app.set('port', config.port)
 
-var logError = function (err, req, res, next) {
-  console.log('Error: %s', err.message)
-  return next(err)
-}
+const logError = function (err, req, res, next) {
+    logger.error('Error: %s', err.message);
+    return next(err)
+};
 
-var errorHandler = function (err, req, res, next) {
-  res.send({
-    status: 500,
-    message: err.message || 'internal error'
-  })
-}
+const errorHandler = function (err, req, res, next) {
+    res.send({
+        status: 500,
+        message: err.message || 'internal error'
+    })
+};
 
 app.use(logError)
 app.use(errorHandler)
 
-mongoose.connect(config.dbUrl)
-mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
-console.log('Using MongoDB URL', config.dbUrl)
+if (process.env.NODE_ENV === 'production') {
+    mongoose.connect(config.dbUrl)
+    mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
+    logger.info('Running SERA in production environment')
+    logger.info('Using MongoDB URL', config.dbUrl)
+} else if (process.env.NODE_ENV === 'development') {
+    mongoose.connect(config.dbUrl)
+    mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
+    logger.info('Running SERA in development environment')
+    logger.info('Using MongoDB URL', config.dbUrl)
+} else if (process.env.NODE_ENV === 'test') {
+    mongoose.connect(config.dbUrlTest)
+    mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
+    logger.info('Running SERA in test environment')
+    logger.info('Using MongoDB URL', config.dbUrlTest)
+}
 
 module.exports = app

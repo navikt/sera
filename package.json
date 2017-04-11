@@ -12,51 +12,137 @@
     "email": "johnny.horvi@nav.no"
   },
   "scripts": {
-    "test": "tape test/*.js | tap-spec"
+    "dev": "better-npm-run dev",
+    "test": "better-npm-run test"
+  },
+  "betterScripts": {
+    "build": {
+      "command": "webpack --verbose --colors --display-error-details --config webpack.config.prod.js",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    "dev": {
+      "command": "better-npm-run clean && better-npm-run mkdir && better-npm-run copy-html && better-npm-run copy-images && better-npm-run copy-favicon && node server.js",
+      "env": {
+        "NODE_PATH": "./",
+        "NODE_ENV": "development",
+        "PORT": 8443
+      }
+    },
+    "test": {
+      "command": "mocha --compilers js:babel-register --recursive ./test --timeout 100000 --no-deprecation",
+      "env": {
+        "NODE_ENV": "test",
+        "NODE_PATH": "./src"
+      }
+    },
+    "clean": {
+      "command": "rimraf frontend/build/*"
+    },
+    "mkdir": {
+      "command": "mkdirp frontend/build/"
+    },
+    "copy-html": {
+      "command": "ncp frontend/src/index.html frontend/build/index.html"
+    },
+    "copy-images": {
+      "command": "ncp frontend/src/images/ frontend/build/images/"
+    },
+    "copy-favicon": {
+      "command": "ncp frontend/src/favicon.png/ frontend/build/favicon.png/"
+    },
+    "copy-fonts": {
+      "command": "ncp frontend/src/fonts/ frontend/build/fonts/"
+    },
+    "prebuild": {
+      "command": "better-npm-run clean && better-npm-run mkdir && better-npm-run copy-html && better-npm-run copy-images && better-npm-run copy-fonts && node server.js"
+    }
   },
   "engines": {
     "node": ">= 0.12.7"
   },
   "dependencies": {
     "body-parser": "^1.13.3",
+    "es6-promise": "^4.1.0",
     "express": "^4.13.3",
-    "json-csv": "^1.0.5",
     "jsonschema": "^1.0.2",
-    "lodash": "^3.10.1",
+    "lodash": "^3.10.0",
     "mongoose": "^4.1.3",
     "morgan": "^1.6.1",
-    "request": "^2.70.0"
+    "react-bootstrap": "^0.30.7",
+    "react-bootstrap-table": "^3.1.1",
+    "react-bootstrap-toggle": "^1.2.19",
+    "react-native": "^0.39.2",
+    "request": "^2.70.0",
+    "webpack": "^1.14.0",
+    "webpack-dev-middleware": "^1.9.0",
+    "webpack-hot-middleware": "^2.13.2",
+    "winston": "^2.3.1"
   },
   "devDependencies": {
-    "bootstrap": "3.3.4",
-    "browserify": "8.0.3",
-    "chai": "1.9.2",
+    "babel-core": "^6.21.0",
+    "babel-loader": "^6.2.10",
+    "babel-polyfill": "^6.20.0",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-react": "^6.16.0",
+    "babel-preset-react-hmre": "^1.1.1",
+    "babel-register": "^6.18.0",
+    "better-npm-run": "0.0.13",
+    "bootstrap": "^3.3.7",
+    "browserify": "13.1.1",
+    "chai": "^3.5.0",
+    "chai-enzyme": "^0.6.1",
+    "chai-http": "^3.0.0",
+    "chai-things": "^0.2.0",
+    "chance": "^1.0.6",
     "console-shim": "1.0.3",
-    "del": "1.1.1",
-    "font-awesome": "4.4.0",
-    "gulp": "3.8.11",
-    "gulp-concat": "2.4.3",
-    "gulp-if": "1.2.5",
-    "gulp-minify-css": "0.4.6",
-    "gulp-rename": "1.2.0",
-    "gulp-size": "1.2.1",
-    "gulp-uglify": "1.0.2",
+    "css-loader": "^0.26.1",
+    "del": "2.2.2",
+    "enzyme": "^2.7.1",
+    "es6-promise": "^4.1.0",
+    "fetch-mock": "^5.9.4",
+    "fetch-ponyfill": "^4.0.0",
+    "file-loader": "^0.9.0",
+    "font-awesome": "4.7.0",
+    "gulp-minify-css": "1.2.4",
+    "gulp-rename": "1.2.2",
+    "gulp-size": "2.1.0",
+    "gulp-uglify": "2.0.0",
+    "isomorphic-fetch": "^2.2.1",
     "jquery": "2.1.3",
-    "moment": "2.9.0",
-    "nock": "^8.0.0",
-    "node-uuid": "1.4.3",
-    "nodemon": "1.2.1",
-    "react": "^15.0.1",
-    "react-bootstrap": "^0.28.5",
+    "jsdom": "9.12.0",
+    "jsdom-global": "2.1.1",
+    "less": "^2.7.1",
+    "less-loader": "^2.2.3",
+    "less-plugin-clean-css": "^1.5.1",
+    "mkdirp": "^0.5.1",
+    "mockgoose": "^7.0.6",
+    "moment": "2.17.1",
+    "ncp": "^2.0.0",
+    "nock": "^9.0.2",
+    "node-uuid": "1.4.7",
+    "nodemon": "1.11.0",
+    "react": "^15.4.2",
+    "react-addons-test-utils": "^15.4.2",
+    "react-bootstrap": "^0.30.7",
     "react-classset": "0.0.2",
-    "react-dom": "^15.0.1",
-    "reactify": "0.17.1",
-    "run-sequence": "1.0.2",
-    "supertest": "0.14.0",
+    "react-dom": "^15.4.2",
+    "react-notification-system": "^0.2.11",
+    "react-notify": "^2.0.1",
+    "reactify": "1.1.1",
+    "rimraf": "^2.5.4",
+    "run-sequence": "1.2.2",
+    "sinon": "^1.17.7",
+    "sinon-chai": "^2.8.0",
+    "sinon-mongoose": "^1.3.0",
+    "style-loader": "^0.13.1",
+    "supertest": "2.0.1",
     "tap-spec": "^4.1.0",
     "tape": "^4.2.0",
+    "url-loader": "^0.5.7",
     "vinyl-buffer": "1.0.0",
-    "vinyl-source-stream": "1.0.0"
+    "vinyl-source-stream": "1.1.0"
   },
   "license": "MIT"
 }

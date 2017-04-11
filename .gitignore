@@ -45,6 +45,8 @@ dist
 
 frontend/build
 
+localvars.json
+
 .settings
 .project
 .classpath

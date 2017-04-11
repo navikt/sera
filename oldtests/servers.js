@@ -6,7 +6,7 @@ var request = require('supertest')
 var mongoose = require('mongoose')
 var Server = require('../api/models/servermongo')
 var config = require('../api/config/config')
-var api = require('../api')
+var api = require('../api/index')
 
 test('prepare server', function (t) {
     mongoose.createConnection(config.dbUrl)
