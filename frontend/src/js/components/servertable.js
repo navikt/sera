@@ -37,8 +37,6 @@ export default class Servertable extends React.Component {
             )
         };
 
-
-
         return (
             <div>
                 <h1>servere&nbsp;
@@ -64,7 +62,7 @@ export default class Servertable extends React.Component {
                             onChange={(event) => this.props.handleChange(event, "hostname")}
                         />
                     </TableHeaderColumn>
-                    <TableHeaderColumn dataField="type" width="70" hidden={!this.props.visibility.type}>
+                    <TableHeaderColumn dataField="type" width="120" hidden={!this.props.visibility.type}>
                         <input
                             ref={this.props.filters.type}
                             id={''}
@@ -85,7 +83,7 @@ export default class Servertable extends React.Component {
                             onChange={(event) => this.props.handleChange(event, "environment")}
                         />
                     </TableHeaderColumn>
-                    <TableHeaderColumn dataField="application" hidden={!this.props.visibility.application}>
+                    <TableHeaderColumn dataField="application" width="250" hidden={!this.props.visibility.application}>
                         <input
                             ref={this.props.filters.application}
                             type="text"
@@ -95,7 +93,7 @@ export default class Servertable extends React.Component {
                             onChange={(event) => this.props.handleChange(event, "application")}
                         />
                     </TableHeaderColumn>
-                    <TableHeaderColumn dataField="unit" hidden={!this.props.visibility.unit}>
+                    <TableHeaderColumn dataField="unit" width="150" hidden={!this.props.visibility.unit}>
                         <input
                             ref={this.props.filters.unit}
                             type="text"
@@ -115,7 +113,7 @@ export default class Servertable extends React.Component {
                             onChange={(event) => this.props.handleChange(event, "site")}
                         />
                     </TableHeaderColumn>
-                    <TableHeaderColumn dataField="rpm_rpm" hidden={!this.props.visibility.rpm_rpm}>
+                    <TableHeaderColumn dataField="rpm_rpm" width="120" hidden={!this.props.visibility.rpm_rpm}>
                         <input
                             ref={this.props.filters.rpm_rpm}
                             type="text"
@@ -125,7 +123,7 @@ export default class Servertable extends React.Component {
                             onChange={(event) => this.props.handleChange(event, "rpm_rpm")}
                         />
                     </TableHeaderColumn>
-                    <TableHeaderColumn dataField="rpm_version" hidden={!this.props.visibility.rpm_version}>
+                    <TableHeaderColumn dataField="rpm_version" width="90" hidden={!this.props.visibility.rpm_version}>
                         <input
                             ref={this.props.filters.rpm_version}
                             type="text"
@@ -145,7 +143,8 @@ export default class Servertable extends React.Component {
                             onChange={(event) => this.props.handleChange(event, "notes")}
                         />
                     </TableHeaderColumn>
-                    <TableHeaderColumn id="created" dataField="created" hidden={!this.props.visibility.created}>
+                    <TableHeaderColumn id="created" dataField="created" width="130"
+                                       hidden={!this.props.visibility.created}>
                         <input
                             ref={this.props.filters.created}
                             id={'created-input'}
@@ -156,7 +155,7 @@ export default class Servertable extends React.Component {
                             onChange={(event) => this.props.handleChange(event, "created")}
                         />
                     </TableHeaderColumn>
-                    <TableHeaderColumn dataField="ipAddress" hidden={!this.props.visibility.ipAddress}>
+                    <TableHeaderColumn dataField="ipAddress" width="100" hidden={!this.props.visibility.ipAddress}>
                         <input
                             ref={this.props.filters.ipAddress}
                             type="text"

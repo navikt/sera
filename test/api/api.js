@@ -2,7 +2,8 @@
 const nock = require('nock')
 const chai = require('chai')
 const chaiHttp = require('chai-http')
-const api = require('../../api/index')
+const api = require('../../production_server')
+// const api = require('../../api/index')
 const should = chai.should();
 
 chai.use(chaiHttp);
@@ -31,7 +32,6 @@ describe('DELETE /api/v1/timestamp', () => {
                 done();
             });
     });
-
 });
 
 describe('GET /api/v1/hoursSinceLastUpdate', () => {

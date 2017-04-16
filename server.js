@@ -24,7 +24,7 @@ const compiler = webpack(webpackConfig);
 
 app.use(require('webpack-dev-middleware')(compiler, serverOptions));
 app.use(require('webpack-hot-middleware')(compiler));
-app.use(express.static(__dirname + "/frontend/build"));
+app.use(express.static(__dirname + "/dist"));
 
 var httpsServer = https.createServer({
     key: fs.readFileSync(config.tlsPrivateKey),

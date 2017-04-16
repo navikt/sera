@@ -4,8 +4,9 @@ const webpack = require('webpack');
 module.exports = {
     devtool: 'source-map',
     entry: [
-        './src/index',
-        './src/stylesheets/index.less'
+        // './frontend/src/index.html',
+        './frontend/src/stylesheets/index.less',
+        './app'
     ],
     output: {
         path: path.join(__dirname, 'dist'),
@@ -13,7 +14,7 @@ module.exports = {
         publicPath: '/'
     },
     plugins: [
-        new webpack.optimize.OccurenceOrderPlugin(),
+        // new webpack.optimize.OccurenceOrderPlugin(),
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify('production')
         }),
@@ -33,7 +34,7 @@ module.exports = {
             {
                 test: /\.less$/,
                 include: [__dirname, "src/stylesheets"],
-                loader: "style!css!less"
+                loader: "style-loader!css-loader!less-loader"
             },
             {
                 test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
