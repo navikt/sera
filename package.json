@@ -39,7 +39,7 @@
       }
     },
     "test": {
-      "command": "mocha --compilers js:babel-register --recursive ./test --timeout 5000 --no-deprecation",
+      "command": "mocha",
       "env": {
         "NODE_ENV": "test",
         "NODE_PATH": "./src"
