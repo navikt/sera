@@ -32,8 +32,8 @@ if (process.env.NODE_ENV === 'production') {
     logger = new winston.Logger({
         transports: [
             new winston.transports.File({
-                level: 'info',
-                filename: './logs.log',
+                level: 'debug',
+                filename: './testlogs.log',
                 handleExceptions: true,
                 json: false,
                 maxsize: 5242880, //5MB

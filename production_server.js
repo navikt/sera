@@ -44,11 +44,18 @@ const httpsServer = https.createServer({
 if (process.env.NODE_ENV === 'production') {
     mongoose.connect(config.dbUrl)
     mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
-    logger.info('Running SERA in production environment')
-    logger.info('Using MongoDB URL', config.dbUrl)
-    logger.info('Using port', config.port)
     httpsServer.listen(config.port, function () {
-        logger.info('SERA is up and ready to go!')
+        logger.info(`
+  ______________________________    _____   
+ /   _____/\\_   _____/\\______   \\  /  _  \\  
+ \\_____  \\  |    __)_  |       _/ /  /_\\  \\ 
+ /        \\ |        \\ |    |   \\/    |    \\
+/_______  //_______  / |____|_  /\____|__   /
+        \\/         \\/         \\/         \\/ 
+`)
+        logger.info('Running in production environment')
+        logger.info('Connected to MongoDB URL', config.dbUrl)
+        logger.info('Listening on port', config.port)
     })
 } else if (process.env.NODE_ENV === 'test') {
     mongoose.connect(config.dbUrlTest)
