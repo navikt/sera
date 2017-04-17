@@ -4,7 +4,7 @@ node {
     def committer, committerEmail, changelog, releaseVersion // metadata
     def application = "sera"
     def dockerDir = "./docker"
-//    def distDir = "${dockerDir}/dist"
+    def distDir = "${dockerDir}/dist"
 
     try {
         stage("checkout") {
