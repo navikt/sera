@@ -3,7 +3,7 @@
     <groupId>no.nav.aura</groupId>
     <artifactId>sera</artifactId>
     <packaging>jar</packaging>
-    <version>163.0.0</version>
+    <version>164.0.0</version>
 
     <parent>
         <groupId>no.nav.aura.maven.poms</groupId>
