@@ -45,6 +45,7 @@ node {
                 sh "mkdir -p ${dockerDir}"
                 sh "cp -r production_server.js app.js package.json dist api ${dockerDir}"
                 // getting modules for production
+                sh cd ${dockerDir}
                 sh "npm install --production || exit 1"
                 // dockerfile?
 
