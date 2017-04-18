@@ -41,7 +41,7 @@ node {
                 // installing modules and building front-end bundle
                 sh "npm install && npm run build || exit 1"
                 // database?
-                // tests go here
+                // unit tests go here?
                 // copying files to docker image
                 sh "mkdir -p ${distDir}"
                 sh "cp -r production_server.js app.js package.json dist api ${distDir}"
