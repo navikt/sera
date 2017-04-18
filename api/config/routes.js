@@ -9,8 +9,8 @@ module.exports = function (app) {
 
     app.get('/metrics', metrics.getMetrics())
     app.get('/isalive', metrics.isAlive())
-    app.get('/selftest', selftest.selftest())
-    app.get('/database', selftest.database())
+    // app.get('/selftest', selftest.selftest())
+    // app.get('/database', selftest.database())
 
     //datakvalitet
     app.get('/api/v1/hoursSinceLastUpdate', timestamp.getHoursSinceLastDbUpdate())
