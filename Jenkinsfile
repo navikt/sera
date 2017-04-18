@@ -15,9 +15,9 @@ node {
         stage("initialize") {
             mvnHome = tool "maven-3.3.9"
             mvn = "${mvnHome}/bin/mvn"
-//            nodeHome = tool "nodejs-6.6.0"
-//            npm = "${nodeHome}/bin/npm"
-//            node = "${nodeHome}/bin/node"
+//            nodeHome = tool "nodejs-6.6.0" ?
+//            npm = "${nodeHome}/bin/npm" ?
+//            node = "${nodeHome}/bin/node" ?
             changelog = sh(script: 'git log `git describe --tags --abbrev=0`..HEAD --oneline', returnStdout: true)
             releaseVersion = sh(script: 'npm version major | cut -d"v" -f2', returnStdout: true).trim()
 
@@ -42,10 +42,10 @@ node {
                 // database?
                 // tests go here
                 // copying files to docker image
-                sh "mkdir -p ${dockerDir}"
-                sh "cp -r production_server.js app.js package.json dist api ${dockerDir}"
+                sh "mkdir -p ${distDir}"
+                sh "cp -r production_server.js app.js package.json dist api ${distDir}"
                 // getting modules for production
-                sh "cd ${dockerDir}"
+                sh "cd ${distDir}"
                 sh "npm install --production || exit 1"
                 // dockerfile?
 
