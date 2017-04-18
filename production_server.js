@@ -1,16 +1,16 @@
 'use strict'
-const path = require('path');
-const express = require('express');
+const path = require('path')
+const express = require('express')
 const bodyParser = require('body-parser')
 const fs = require('fs')
 const https = require('https')
 const mongoose = require('mongoose')
 const logger = require('./api/logger')
-const config = require('./api/config/config')
+const config = require('./api/config/production_config')
 
 const app = new express();
 
-logger.debug("Overriding, 'Express' logger");
+logger.debug("Overriding, 'Express' logger")
 app.use(require('morgan')('short', {stream: logger.stream}))
 
 app.use(express.static(__dirname + "/dist"))
@@ -41,11 +41,11 @@ const httpsServer = https.createServer({
     cert: fs.readFileSync(config.tlsCert)
 }, app);
 
-if (process.env.NODE_ENV === 'production') {
-    mongoose.connect(config.dbUrl)
-    mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
-    httpsServer.listen(config.port, function () {
-        logger.info(`
+
+mongoose.connect(config.dbUrl)
+mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
+httpsServer.listen(config.port, function () {
+    console.log(`
   ______________________________    _____   
  /   _____/\\_   _____/\\______   \\  /  _  \\  
  \\_____  \\  |    __)_  |       _/ /  /_\\  \\ 
@@ -53,18 +53,10 @@ if (process.env.NODE_ENV === 'production') {
 /_______  //_______  / |____|_  /\____|__   /
         \\/         \\/         \\/         \\/ 
 `)
-        logger.info('Running in production environment')
-        logger.info('Connected to MongoDB URL', config.dbUrl)
-        logger.info('Listening on port', config.port)
-    })
-} else if (process.env.NODE_ENV === 'test') {
-    mongoose.connect(config.dbUrlTest)
-    mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
-    logger.info('Running SERA in test environment')
-    logger.info('Using MongoDB URL', config.dbUrlTest)
-    httpsServer.listen(8869, function () {
-        logger.info('SERA is up and ready to go!')
-    })
-}
+    logger.info('Running in production environment')
+    logger.info('Connected to MongoDB URL', config.dbUrl)
+    logger.info('Listening on port', config.port)
+})
+
 
 module.exports = app

@@ -62,27 +62,27 @@ node {
             }
         }
 
-//        stage("build and publish docker image") {
-//            def imageName = "docker.adeo.no:5000/${application}:${releaseVersion}"
-//            sh "sudo docker build -t ${imageName} ./docker"
-//            sh "sudo docker push ${imageName}"
-//        }
-//
-//        stage("publish app-config artifact") {
-//            sh "${mvn} clean deploy -f app-config/pom.xml -DskipTests -B -e"
-//        }
-//
+        stage("build and publish docker image") {
+            def imageName = "docker.adeo.no:5000/${application}:${releaseVersion}"
+            sh "sudo docker build -t ${imageName} ./docker"
+            sh "sudo docker push ${imageName}"
+        }
+
+        stage("publish app-config artifact") {
+            sh "${mvn} clean deploy -f app-config/pom.xml -DskipTests -B -e"
+        }
+
 //        stage("jilease") {
 //            withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'jiraServiceUser', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
 //                sh "/usr/bin/jilease -jiraUrl http://jira.adeo.no -project AURA -application ${application} -version $releaseVersion -username $env.USERNAME -password $env.PASSWORD"
 //            }
 //        }
-//
-//        stage("deploy to cd-u1") {
-//            withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'srvauraautodeploy', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-//                sh "${mvn} aura:deploy -Dapps=${application}:${releaseVersion} -Denv=cd-u1 -Dusername=${env.USERNAME} -Dpassword=${env.PASSWORD} -Dorg.slf4j.simpleLogger.log.no.nav=debug -B -Ddebug=true -e"
-//            }
-//        }
+
+        stage("deploy to cd-u1") {
+            withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'srvauraautodeploy', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+                sh "${mvn} aura:deploy -Dapps=${application}:${releaseVersion} -Denv=cd-u1 -Dusername=${env.USERNAME} -Dpassword=${env.PASSWORD} -Dorg.slf4j.simpleLogger.log.no.nav=debug -B -Ddebug=true -e"
+            }
+        }
 //
 //        stage("deploy to production") {
 //            withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'srvauraautodeploy', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {

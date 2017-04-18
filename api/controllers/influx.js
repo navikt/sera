@@ -3,8 +3,6 @@ const logger = require('../logger');
 const config = require('../config/config')
 
 
-
-
 exports.enrichWithDataFromInflux = function (servers, writeToDb, incomingDataResponse) {
     logger.info("Querying influxDB metrics / rpm.install for data...")
     buildRequestString(servers, makeHttpRequest, writeToDb, incomingDataResponse)
