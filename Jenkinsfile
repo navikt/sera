@@ -6,6 +6,7 @@ node {
     def dockerDir = "./docker"
     def distDir = "${dockerDir}/dist"
 
+
     try {
         stage("checkout") {
             git url: "ssh://git@stash.devillo.no:7999/aura/${application}.git"
