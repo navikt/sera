@@ -1,8 +1,6 @@
 const path = require('path')
 const rootPath = path.normalize(__dirname + '/..')
 
-
-
 const config = {
     root: rootPath,
     port: process.env['PORT'] || 8443,

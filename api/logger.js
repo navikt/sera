@@ -4,19 +4,7 @@ winston.emitErrs = true;
 
 let logger = [];
 
-if (process.env.NODE_ENV === 'production') {
-    logger = new winston.Logger({
-        transports: [
-            new winston.transports.Console({
-                level: 'info',
-                handleExceptions: true,
-                json: false,
-                colorize: false
-            })
-        ],
-        exitOnError: false
-    });
-} else if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === 'development') {
     logger = new winston.Logger({
         transports: [
             new winston.transports.Console({
@@ -44,6 +32,18 @@ if (process.env.NODE_ENV === 'production') {
         ],
         exitOnError: false
     })
+} else {
+    logger = new winston.Logger({
+        transports: [
+            new winston.transports.Console({
+                level: 'info',
+                handleExceptions: true,
+                json: false,
+                colorize: false
+            })
+        ],
+        exitOnError: false
+    });
 }
 
 module.exports = logger;

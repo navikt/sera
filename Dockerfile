@@ -6,6 +6,4 @@ ADD ./dist .
 
 EXPOSE 8443
 
-ARG NODE_ENV=production
-
 CMD ["node", "production_server.js"]
