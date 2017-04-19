@@ -6,7 +6,7 @@ const fs = require('fs')
 const https = require('https')
 const mongoose = require('mongoose')
 const logger = require('./api/logger')
-const config = require('./api/config/production_config')
+const config = require('./api/config/config')
 
 const app = new express();
 

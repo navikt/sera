@@ -4,6 +4,7 @@ const rootPath = path.normalize(__dirname + '/..')
 const config = {
     root: rootPath,
     port: process.env['PORT'] || 8443,
+    dbUrl: process.env['seraDb_url'] || "mongodb://localhost:27017/sera",
     dbUser: process.env['seraDb_username'],
     dbPassword: process.env['seraDb_password'],
     tlsPrivateKey: process.env['TLS_PRIVATE_KEY'] || "localhost.key",
@@ -12,7 +13,7 @@ const config = {
     cocaUrl: process.env['costService_url'] || 'https://coca.adeo.no/api/v1/calculator/',
     // noraUrl: process.env['units_v1_url'] || 'https://nora.adeo.no/api/v1/units',
     noraUrl: 'https://nora.adeo.no/api/v1/units',
-    influxUrl: process.env['influxdb_url'],
+    influxUrl: process.env['influxdb_url'] || "http://influxdb.adeo.no:8086",
     influxUser: process.env['influxdb_username'],
     influxPassword: process.env['influxdb_password']
 }

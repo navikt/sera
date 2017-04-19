@@ -2,7 +2,7 @@ const winston = require('winston')
 
 winston.emitErrs = true;
 
-let logger = [];
+let logger;
 
 if (process.env.NODE_ENV === 'development') {
     logger = new winston.Logger({
