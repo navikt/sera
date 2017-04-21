@@ -45,6 +45,17 @@ const httpsServer = https.createServer({
 }, app);
 
 
+if (process.env.NODE_ENV === 'test') {
+    mongoose.connect(config.dbUrl)
+    mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
+    httpsServer.listen(config.port, function () {
+
+        logger.info('Running in test environment')
+        logger.info('Connected to MongoDB URL', config.dbUrl)
+        logger.info('Listening on port', config.port)
+    })
+}
+
 mongoose.connect(config.dbUrl)
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
 httpsServer.listen(config.port, function () {

@@ -40,12 +40,10 @@ node {
             withEnv(['HTTP_PROXY=http://webproxy-utvikler.nav.no:8088', 'NO_PROXY=adeo.no']) {
                 // installing modules and building front-end bundle
                 sh "npm install && npm run build || exit 1"
-                // database?
-                // unit tests go here?
                 // copying files to docker image
                 sh "mkdir -p ${distDir}"
                 sh "cp -r production_server.js app.js package.json dist api ${distDir}"
-                // workaround for local variables bering required even in production environment
+                // workaround for local variables being required even in production environment
                 sh "echo {} > ${distDir}/localvars.json"
                 // getting modules for production
                 sh "cd ${distDir} && npm install --production || exit 1"
@@ -62,6 +60,10 @@ node {
 //                sh "cp -r dist ${distDir}" // Copying frontend bundle
 //                sh "cp Dockerfile ${dockerDir}"
             }
+        }
+
+        stage("run frontend and api tests") {
+            sh "CONTAINER_ID=\$(sudo docker run -d -p 27019:27017 docker.adeo.no:5000/mongo:2.6.11)"
         }
 
         stage("build and publish docker image") {
