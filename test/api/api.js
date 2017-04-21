@@ -2,17 +2,10 @@
 const nock = require('nock')
 const chai = require('chai')
 const chaiHttp = require('chai-http')
-// const api = require('../../production_server')
-const api = require('../../api/index')
+const api = require('../../production_server')
+// const api = require('../../api/index')
 const should = chai.should();
-// const mongoose = require('mongoose')
-// const Mockgoose = require('mockgoose').Mockgoose
-// const mockgoose = new Mockgoose(mongoose)
-// const config = require('../../api/config/config')
 
-// mockgoose.prepareStorage().then(function() {
-//     mongoose.connect(config.dbUrl)
-// })
 
 chai.use(chaiHttp);
 
