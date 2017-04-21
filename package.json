@@ -25,7 +25,7 @@
       }
     },
     "build": {
-      "command": "better-npm-run clean && better-npm-run mkdir && better-npm-run copy-html && better-npm-run copy-images && better-npm-run copy-favicon && webpack --verbose --colors --display-error-details --config webpack.config.prod.js",
+      "command": "better-npm-run clean && better-npm-run mkdir && better-npm-run copy-html && better-npm-run copy-images && better-npm-run copy-favicon && webpack --display-error-details --config webpack.config.prod.js",
       "env": {
         "NODE_ENV": "production"
       }
