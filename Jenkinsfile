@@ -63,9 +63,9 @@ node {
         }
 
         stage("run frontend and api tests") {
-            sh "CONTAINER_ID=\$(sudo docker run -d -p 27017:27017 docker.adeo.no:5000/mongo:2.6.11)"
+//            sh "CONTAINER_ID=\$(sudo docker run -d -p 27017:27017 docker.adeo.no:5000/mongo:2.6.11)"
             sh "npm run test || sudo docker rm -f \$CONTAINER_ID"
-            sh "sudo docker rm -f \$CONTAINER_ID"
+//            sh "sudo docker rm -f \$CONTAINER_ID"
         }
 
         stage("build and publish docker image") {
