@@ -46,7 +46,7 @@ node {
                 sh "mkdir -p ${distDir}"
                 sh "cp -r production_server.js app.js package.json dist api ${distDir}"
                 // workaround for local variables bering required even in production environment
-                sh "touch ${distDir}/localvars.json"
+                sh "echo {} > ${distDir}/localvars.json"
                 // getting modules for production
                 sh "cd ${distDir} && npm install --production || exit 1"
                 sh "cp Dockerfile ${dockerDir}"
