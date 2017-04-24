@@ -16,9 +16,6 @@ node {
         stage("initialize") {
             mvnHome = tool "maven-3.3.9"
             mvn = "${mvnHome}/bin/mvn"
-//            nodeHome = tool "nodejs-6.6.0" ?
-//            npm = "${nodeHome}/bin/npm" ?
-//            node = "${nodeHome}/bin/node" ?
             changelog = sh(script: 'git log `git describe --tags --abbrev=0`..HEAD --oneline', returnStdout: true)
             releaseVersion = sh(script: 'npm version major | cut -d"v" -f2', returnStdout: true).trim()
 
@@ -43,30 +40,16 @@ node {
                 // copying files to docker image
                 sh "mkdir -p ${distDir}"
                 sh "cp -r production_server.js app.js package.json dist api ${distDir}"
-                // workaround for local variables being required even in production environment
+                // workaround for local variables being required production environment
                 sh "echo {} > ${distDir}/localvars.json"
                 // getting modules for production
                 sh "cd ${distDir} && npm install --production || exit 1"
                 sh "cp Dockerfile ${dockerDir}"
-
-
-
-
-//                sh "mkdir -p ${distDir}"
-//                sh "cp production_server.js config.js selftest.js ${distDir}"
-//                sh "cd ${distDir} && cp ../../package.json . && npm install --production && cd -"
-//                // getting required node_modules for production
-//                sh "npm install && npm run build || exit 1" // Creating frontend bundle
-//                sh "cp -r dist ${distDir}" // Copying frontend bundle
-//                sh "cp Dockerfile ${dockerDir}"
             }
         }
 
         stage("run frontend unit tests") {
-//            sh "CONTAINER_ID=\$(sudo docker run -d -p 27017:27017 docker.adeo.no:5000/mongo:2.6.11)"
-
-            sh "npm run test"
-//            sh "sudo docker rm -f \$CONTAINER_ID"
+            sh "npm run test || exit 1"
         }
 
         stage("build and publish docker image") {
