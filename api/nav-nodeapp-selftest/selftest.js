@@ -1,21 +1,58 @@
+const fs = require('fs')
+const parseString = require('xml2js').parseString
 const request = require('request')
-const Server = require('../models/servermongo')
 const TimestampModel = require('../models/timestamp')
 const logger = require('../logger')
 const config = require('../config/config')
 
 let selftestResponse = {
-    application: 'sera',
-    version: '1.1.1'
+    application: '',
+    version: '',
+    timestamp: '',
 }
 
 exports.selftest = function () {
     return function (req, res) {
-        res.header('Content-Type', 'application/json; charset=utf-8')
-        res.json('Selftest!')
-        res.status(200).send()
+        readAppInfo()
+    }
+
+}
+
+const readAppInfo = function () {
+    fs.readFile('app-config/pom.xml', function (err, data) {
+        if (err) {
+            throw err
+        }
+        parseString(data.toString(), function (err, result) {
+            console.log(result)
+        })
+    })
+}
+
+
+
+
+exports.readAppConfig = function () {
+    return function (req, res) {
+        fs.readFile('app-config/src/main/resources/app-config.xml', function (err, data) {
+            if (err) {
+                throw err
+            }
+            parseString(data.toString(), function (err, result) {
+                result.application.resources[0].rest.forEach(function (e, i) {
+                    console.log(e.$.alias)
+                })
+
+
+                console.log(result.application.resources[0].rest.$)
+                res.header('Content-Type', 'application/json; charset=utf-8')
+                res.status(200).send(result.application.resources[0])
+
+            })
+        })
     }
 }
+
 
 exports.database = function () {
     return function (request, res, next) {
