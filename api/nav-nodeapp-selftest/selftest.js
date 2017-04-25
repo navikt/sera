@@ -80,6 +80,7 @@ const requestRestEndpoint = function (endpoint) {
             }
         })
     }, function (err) {
+        console.log(checks)
         requestBaseUrl(baseUrl)
     })
 }
@@ -111,6 +112,7 @@ const requestBaseUrl = function (baseUrl) {
             }
         })
     }, function () {
+        console.log(checks)
         pingDatasource(datasource)
     })
 }
@@ -122,6 +124,7 @@ const pingDatasource = function (datasource) {
         console.log(dbUrl)
         createConnection(dbUrl, callback)
     }, function () {
+        console.log(checks)
         buildAndReturnJSON()
     })
 }
