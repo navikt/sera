@@ -35,7 +35,6 @@ const readAppInfo = function () {
                 version: result.project.version[0]
             }
             readAppConfig()
-            console.log(selftestResponse)
         })
     })
 }
@@ -49,7 +48,6 @@ const readAppConfig = function (testFunc) {
             endpoint = result.application.resources[0].rest
             datasource = result.application.resources[0].datasource
             baseUrl = result.application.resources[0].baseUrl
-
             requestRestEndpoint(endpoint)
         })
     })
@@ -59,6 +57,7 @@ const requestRestEndpoint = function (endpoint) {
     async.each(endpoint, function (currentEndpoint, callback) {
         currentEndpoint = currentEndpoint.$.alias + '_url'
         const url = process.env[currentEndpoint] || 'http://navet.adeo.no/' // use dummy URL if running locally
+        console.log(url)
         request.get({
             url: url,
             time: true
@@ -89,6 +88,7 @@ const requestBaseUrl = function (baseUrl) {
     async.each(baseUrl, function (currentEndpoint, callback) {
         currentEndpoint = currentEndpoint.$.alias + '_url'
         const url = process.env[currentEndpoint] || 'http://influxdb.adeo.no:8086' // use dummy URL if running locally
+        console.log(url)
         request.get({
             url: url,
             time: true
@@ -110,7 +110,7 @@ const requestBaseUrl = function (baseUrl) {
                 callback()
             }
         })
-    }, function (err) {
+    }, function () {
         pingDatasource(datasource)
     })
 }
@@ -119,9 +119,9 @@ const pingDatasource = function (datasource) {
     async.each(datasource, function (currentEndpoint, callback) {
         currentEndpoint = currentEndpoint.$.alias + '_url'
         const dbUrl = process.env[currentEndpoint] || 'mongodb://localhost:27017/test' // use dummy URL if running locally
+        console.log(dbUrl)
         createConnection(dbUrl, callback)
     }, function () {
-        console.log(checks)
         buildAndReturnJSON()
     })
 }
@@ -149,7 +149,6 @@ const createConnection = function(dbUrl, callback) {
 }
 
 const buildAndReturnJSON = function() {
-
     response.header('Content-Type', 'application/json; charset=utf-8')
     selftestResponse.checks = checks
     response.status(200).send(selftestResponse)
