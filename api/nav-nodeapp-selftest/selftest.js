@@ -3,18 +3,23 @@ const parseString = require('xml2js').parseString
 const request = require('request')
 const async = require('async')
 const TimestampModel = require('../models/timestamp')
+const mongoose = require('mongoose')
 const logger = require('../logger')
 const config = require('../config/config')
+const EventEmitter = require('events')
 
 let selftestResponse = {}
 let checks = []
 let endpoint = []
 let datasource = []
 let baseUrl = []
+let response = {}
+
 
 exports.selftest = function () {
     return function (req, res) {
         checks = []
+        response = res
         readAppInfo()
     }
 }
@@ -52,8 +57,8 @@ const readAppConfig = function (testFunc) {
 
 const requestRestEndpoint = function (endpoint) {
     async.each(endpoint, function (currentEndpoint, callback) {
-        const currentRestEndpoint = currentEndpoint + '_url'
-        const url = process.env[currentRestEndpoint] || 'http://navet.adeo.no/' // use dummy URL if running locally
+        currentEndpoint = currentEndpoint.$.alias + '_url'
+        const url = process.env[currentEndpoint] || 'http://navet.adeo.no/' // use dummy URL if running locally
         request.get({
             url: url,
             time: true
@@ -75,15 +80,15 @@ const requestRestEndpoint = function (endpoint) {
                 callback()
             }
         })
-    }, function(err) {
+    }, function (err) {
         requestBaseUrl(baseUrl)
     })
 }
 
 const requestBaseUrl = function (baseUrl) {
     async.each(baseUrl, function (currentEndpoint, callback) {
-        const currentRestEndpoint = currentEndpoint + '_url'
-        const url = process.env[currentRestEndpoint] || 'http://influxdb.adeo.no:8086' // use dummy URL if running locally
+        currentEndpoint = currentEndpoint.$.alias + '_url'
+        const url = process.env[currentEndpoint] || 'http://influxdb.adeo.no:8086' // use dummy URL if running locally
         request.get({
             url: url,
             time: true
@@ -105,23 +110,51 @@ const requestBaseUrl = function (baseUrl) {
                 callback()
             }
         })
-    }, function(err) {
-        console.log(checks)
+    }, function (err) {
+        pingDatasource(datasource)
     })
 }
 
-// exports.database = function () {
-//     return function (request, res, next) {
-//         TimestampModel.find({}, function (error, response) {
-//             if (error) {
-//                 res.status(500).send(error)
-//             } else {
-//                 res.header('Content-Type', 'application/json; charset=utf-8')
-//                 res.json(response)
-//                 res.status(200).send()
-//             }
-//         })
-//     }
-// }
+const pingDatasource = function (datasource) {
+    async.each(datasource, function (currentEndpoint, callback) {
+        currentEndpoint = currentEndpoint.$.alias + '_url'
+        const dbUrl = process.env[currentEndpoint] || 'mongodb://localhost:27017/test' // use dummy URL if running locally
+        createConnection(dbUrl, callback)
+    }, function () {
+        console.log(checks)
+        buildAndReturnJSON()
+    })
+}
+
+const createConnection = function(dbUrl, callback) {
+    const dbConnection = mongoose.createConnection(dbUrl)
+    dbConnection.on('connected', function() {
+        checks.push({
+            endpoint: dbUrl,
+            description: 'Test mot mongoDb',
+            result: 0,
+        })
+        callback()
+    })
+    dbConnection.on('error', function(err) {
+        checks.push({
+            endpoint: dbUrl,
+            description: 'Test mot mongoDb',
+            errorMessage: err,
+            result: 1
+        })
+        callback()
+    })
+    dbConnection.close()
+}
+
+const buildAndReturnJSON = function() {
+
+    response.header('Content-Type', 'application/json; charset=utf-8')
+    selftestResponse.checks = checks
+    response.status(200).send(selftestResponse)
+}
+
+
 
 

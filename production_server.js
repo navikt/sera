@@ -5,11 +5,8 @@ const bodyParser = require('body-parser')
 const fs = require('fs')
 const https = require('https')
 const mongoose = require('mongoose')
-// const rootCas = require('ssl-root-cas/latest').create()
 const logger = require('./api/logger')
 const config = require('./api/config/config')
-
-// require('https').globalAgent.options.ca = rootCas
 
 const app = new express();
 
