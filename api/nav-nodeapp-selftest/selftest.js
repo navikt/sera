@@ -2,11 +2,9 @@ const fs = require('fs')
 const parseString = require('xml2js').parseString
 const request = require('request')
 const async = require('async')
-const TimestampModel = require('../models/timestamp')
 const mongoose = require('mongoose')
 const logger = require('../logger')
 const config = require('../config/config')
-const EventEmitter = require('events')
 
 let selftestResponse = {}
 let checks = []
@@ -56,7 +54,8 @@ const readAppConfig = function (testFunc) {
 const requestRestEndpoint = function (endpoint) {
     async.each(endpoint, function (currentEndpoint, callback) {
         currentEndpoint = currentEndpoint.$.alias + '_url'
-        const url = process.env[currentEndpoint] || 'http://navet.adeo.no/' // use dummy URL if running locally
+        let url = process.env[currentEndpoint] || 'http://navet.adeo.no/' // use dummy URL if running locally
+        if (currentEndpoint === 'units_v1_url') url = 'https://nora.adeo.no/api/v1/units' // hack for nora
         console.log(url)
         request.get({
             url: url,
