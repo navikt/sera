@@ -3,7 +3,7 @@ module.exports = function (app) {
     const metrics = require('../controllers/metrics')
     const timestamp = require('../controllers/timestamp')
     const selftest = require('../controllers/selftest')
-    const navSelftest = require('../nav-nodeapp-selftest/selftest')
+    const navSelftest = require('../selftest/selftest')
 
 
     app.post('/api/v1/servers', servers.registerServers())
@@ -11,11 +11,7 @@ module.exports = function (app) {
 
     app.get('/metrics', metrics.getMetrics())
     app.get('/isalive', metrics.isAlive())
-    app.get('/selftest', selftest.selftest())
-    app.get('/database', selftest.database())
-    app.get('/rest', selftest.pingRestEndpoint())
-    app.get('/test', navSelftest.selftest())
-
+    app.get('/selftest', navSelftest.selftest())
 
     //datakvalitet
     app.get('/api/v1/hoursSinceLastUpdate', timestamp.getHoursSinceLastDbUpdate())
