@@ -65,7 +65,7 @@ const requestRestEndpoint = function (endpoint) {
             currentEndpoint = currentEndpoint.$.alias + '_url'
             let url = process.env[currentEndpoint] || 'http://navet.adeo.no/' // use dummy URL if running locally
             if (currentEndpoint === 'units_v1_url') url = 'https://nora.adeo.no/api/v1/units' // bruker prod nora
-            if (currentEndpoint === 'nodes_v2_url') url = 'https://fasit.adeo.no/api/v2/nodes' // legger inn prod-fasit
+            if (currentEndpoint === 'fasit:nodes_v2_url') url = 'https://fasit.adeo.no/api/v2/nodes' // legger inn prod-fasit
             request.get({
                 url: url,
                 time: true
