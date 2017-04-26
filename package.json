@@ -122,7 +122,7 @@
     "react": "^15.4.2",
     "react-addons-test-utils": "^15.4.2",
     "react-bootstrap": "^0.30.7",
-    "react-bootstrap-table": "^3.1.1",
+    "react-bootstrap-table": "^3.2.2",
     "react-dom": "^15.4.2",
     "reactify": "1.1.1",
     "rimraf": "^2.5.4",

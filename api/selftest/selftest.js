@@ -9,7 +9,7 @@ const config = require('../config/config')
 
 // Funksjon som svarer på selftest-kall mot backend. Vil gå gjennom app-config.xml og kjøre requests på rest-api og
 // mongoDB hvis dette er definert. Det er også lagt inn en egen test av et kall mot influxDB. Hvis en  av testene feiler
-// settes aggregateResult til 1.
+// settes aggregateResult til 1. Mulig dette må endres på sikt om det ikke virker veldig bra.
 
 // Definerer globale variabler
 let selftestResponse = {}
@@ -64,7 +64,8 @@ const requestRestEndpoint = function (endpoint) {
     async.each(endpoint, function (currentEndpoint, callback) {
             currentEndpoint = currentEndpoint.$.alias + '_url'
             let url = process.env[currentEndpoint] || 'http://navet.adeo.no/' // use dummy URL if running locally
-            if (currentEndpoint === 'units_v1_url') url = 'https://nora.adeo.no/api/v1/units' // hack for nora
+            if (currentEndpoint === 'units_v1_url') url = 'https://nora.adeo.no/api/v1/units' // bruker prod nora
+            if (currentEndpoint === 'nodes_v2_url') url = 'https://fasit.adeo.no/api/v2/nodes' // legger inn prod-fasit
             request.get({
                 url: url,
                 time: true
@@ -179,7 +180,3 @@ const buildAndReturnJSON = function () {
     response.header('Content-Type', 'application/json; charset=utf-8')
     response.status(200).send(selftestResponse)
 }
-
-
-
-

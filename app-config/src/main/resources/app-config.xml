@@ -21,6 +21,11 @@
         <credential alias="influxdb" />
     </resources>
 
+    <selftest>
+        <path>/selftest</path>
+        <humanReadablePath>/selftest</humanReadablePath>
+    </selftest>
+
     <monitoring>
         <metric path="/metrics"/>
     </monitoring>
