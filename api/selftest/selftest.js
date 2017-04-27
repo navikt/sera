@@ -3,13 +3,14 @@ const parseString = require('xml2js').parseString
 const request = require('request')
 const async = require('async')
 const mongoose = require('mongoose')
-const ping = require('jjg-ping')
+const TimestampModel = require('../models/timestamp')
 const logger = require('../logger')
 const config = require('../config/config')
 
 // Funksjon som svarer på selftest-kall mot backend. Vil gå gjennom app-config.xml og kjøre requests på rest-api og
 // mongoDB hvis dette er definert. Det er også lagt inn en egen test av et kall mot influxDB. Hvis en  av testene feiler
-// settes aggregateResult til 1. Mulig dette må endres på sikt om det ikke virker veldig bra.
+// settes aggregateResult til 1. Både test mot database og influx må skrives spesifikt for sera så det er mulig
+// biten også må endres på sikt.
 
 // Definerer globale variabler
 let selftestResponse = {}
@@ -134,42 +135,71 @@ const testInfluxDb = function () {
             }
             aggregateResult = 1
         }
-        testDatasourceConnection(datasource)
+        testDatasourceConnection()
     })
 }
-// Test av mongoDB. Oppretter ny connection i samme connection-pool. Resultat dyttes inn i checks
-const testDatasourceConnection = function (datasource) {
-    async.each(datasource, function (currentEndpoint, callback) {
-        currentEndpoint = currentEndpoint.$.alias + '_url'
-        const dbUrl = process.env[currentEndpoint] || 'mongodb://localhost:27017/test' // use dummy URL if running locally
-        createConnection(dbUrl, callback)
-    }, function () {
-        buildAndReturnJSON()
-    })
-}
-// Selve databaselogikk her
-const createConnection = function (dbUrl, callback) {
-    const dbConnection = mongoose.createConnection(dbUrl)
-    dbConnection.on('connected', function () {
+// Test av mongoDB. Leser fra eksisterende databasekobling. Resultat dyttes inn i checks. Callback fra collection.find
+// timer ut etter 2 sekunder og logger egen feil. Dette er fordi det ikke vil komme feilmelding om databasen er nede.
+// Når testen gjøres på denne måten vil queries fra selftesten legges i kø mot mongodb-driveren og kjøres med en gang
+// databasen kommer opp igjen.
+const testDatasourceConnection = function () {
+    let timeoutProtect = setTimeout(function () {
+        timeoutProtect = null
         checks.push({
-            endpoint: dbUrl,
+            endpoint: config.dbUrl,
             description: 'Test mot mongoDb',
-            result: 0,
-        })
-
-        callback()
-    })
-    dbConnection.on('error', function (err) {
-        checks.push({
-            endpoint: dbUrl,
-            description: 'Test mot mongoDb',
-            errorMessage: err,
+            errorMessage: 'Ingen respons fra databasespørring. Databasen er mest sannsynlig utilgjengelig.',
             result: 1
         })
         aggregateResult = 1
-        callback()
+        buildAndReturnJSON()
+    }, 2000)
+    TimestampModel.find({}, function (err, result) {
+        if (!err && timeoutProtect) {
+            checks.push({
+                endpoint: config.dbUrl,
+                description: 'Test mot mongoDb',
+                result: 0,
+            })
+        } else {
+            checks.push({
+                endpoint: config.dbUrl,
+                description: 'Test mot mongoDb',
+                errorMessage: err,
+                result: 1
+            })
+            aggregateResult = 1
+        }
+        clearTimeout(timeoutProtect)
+        checkDataImport()
     })
-    dbConnection.close()
+};
+
+const checkDataImport = function() {
+    request.get({
+        url: 'https://localhost:8443/api/v1/hourssincelastupdate',
+        time: true
+    }, function (error, response) {
+        console.log(error)
+        if (!error && response.body === 0) {
+            checks.push({
+                endpoint: '/api/v1/hourssincelastupdate',
+                description: 'Test av dataimport',
+                result: 0,
+                responseTime: response.elapsedTime
+            })
+        } else {
+            checks.push({
+                endpoint: '/api/v1/hourssincelastupdate',
+                description: 'Test av dataimport',
+                result: 2,
+                errorMessage: 'Det er over en time siden siste dataimport, det er mulig ekportjobben i orchestrator har stoppet',
+                responseTime: response.elapsedTime
+            })
+            aggregateResult = 2
+        }
+        buildAndReturnJSON()
+    })
 }
 // Bygger selve JSON og sender response
 const buildAndReturnJSON = function () {

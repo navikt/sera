@@ -50,8 +50,7 @@ if (process.env.NODE_ENV === 'test') {
         logger.info('Listening on port', 8869)
     })
 } else {
-
-    mongoose.connect(config.dbUrl)
+    mongoose.connect(config.dbUrl, { server: { reconnectTries: Number.MAX_VALUE  } }) // aldri gi opp reconnect
     mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
     httpsServer.listen(config.port, function () {
         console.log(`

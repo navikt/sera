@@ -21,7 +21,8 @@
     "start": {
       "command": "node production_server.js",
       "env": {
-        "NODE_ENV": "production"
+        "NODE_ENV": "production",
+        "NODE_TLS_REJECT_UNAUTHORIZED": 0
       }
     },
     "build": {
@@ -73,7 +74,6 @@
     "async": "^2.3.0",
     "body-parser": "^1.13.3",
     "express": "^4.13.3",
-    "jjg-ping": "^1.0.1",
     "json-csv": "^1.4.0",
     "jsonschema": "^1.0.2",
     "lodash": "^3.10.1",
