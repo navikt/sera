@@ -35,6 +35,9 @@ node {
 
         stage("build frontend bundle") {
             withEnv(['HTTP_PROXY=http://webproxy-utvikler.nav.no:8088', 'NO_PROXY=adeo.no']) {
+                steps {
+                    echo 'installing modules and building front-end bundle'
+                }
                 // installing modules and building front-end bundle
                 sh "npm install && npm run build || exit 1"
                 // copying files to docker image
