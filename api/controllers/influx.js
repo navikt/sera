@@ -10,12 +10,13 @@ exports.enrichWithDataFromInflux = function (servers, writeToDb, incomingDataRes
 
 const buildRequestString = function (servers, makeHttpRequest, writeToDb, incomingDataResponse) {
     logger.info("Building query string...")
+    const baseUrl = config.influxUrl + "/query?q="
     let requestString = ""
     servers.forEach(function (e) {
         const request = "SELECT+*+FROM+%22rpm.install%22+WHERE+%22hostname%22+%3D+'" + e.hostname + "'+ORDER+BY+time+DESC+LIMIT+1%3B"
         requestString = requestString + request
     })
-    requestString = config.influxUrl + (requestString.slice(0, -4)) + "+1&db=metrics"
+    requestString = baseUrl + (requestString.slice(0, -4)) + "+1&db=metrics"
     makeHttpRequest(requestString, servers, mergeData, writeToDb, incomingDataResponse)
 }
 

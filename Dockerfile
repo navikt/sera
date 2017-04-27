@@ -6,6 +6,7 @@ ADD ./dist .
 
 EXPOSE 8443
 
+ENV NODE_ENV=production
 ENV NODE_TLS_REJECT_UNAUTHORIZED=0
 
 CMD ["node", "production_server.js"]

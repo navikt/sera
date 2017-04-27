@@ -24,7 +24,7 @@ let response = {}
 
 // Resetter variabler mellom hvert kall.
 exports.selftest = function () {
-    return function (req, res) {
+    return function (req, res, next) {
         checks = []
         aggregateResult = 0
         response = res
@@ -152,7 +152,7 @@ const testDatasourceConnection = function () {
             result: 1
         })
         aggregateResult = 1
-        buildAndReturnJSON()
+        buildAndReturnJSON() // hopper over test av dataimport hvis databasen er nede.
     }, 2000)
     TimestampModel.find({}, function (err, result) {
         if (!err && timeoutProtect) {
@@ -175,13 +175,12 @@ const testDatasourceConnection = function () {
     })
 };
 
-const checkDataImport = function() {
+const checkDataImport = function () {
     request.get({
         url: 'https://localhost:8443/api/v1/hourssincelastupdate',
         time: true
     }, function (error, response) {
-        console.log(error)
-        if (!error && response.body === 0) {
+        if (!error && response.body === "0") {
             checks.push({
                 endpoint: '/api/v1/hourssincelastupdate',
                 description: 'Test av dataimport',
@@ -201,12 +200,14 @@ const checkDataImport = function() {
         buildAndReturnJSON()
     })
 }
-// Bygger selve JSON og sender response
+// Bygger selve JSON og sender respons
 const buildAndReturnJSON = function () {
-    logger.info('Selftest returned aggregate result of', aggregateResult)
-    selftestResponse.timestamp = new Date()
-    selftestResponse.aggregateResult = aggregateResult
-    selftestResponse.checks = checks
-    response.header('Content-Type', 'application/json; charset=utf-8')
-    response.status(200).send(JSON.stringify(selftestResponse))
+    if (!response.headersSent) { // hvis selftest kalles for ofte, venter vi til den siste er ferdig før vi sender ny respons.
+        logger.info('Selftest returned aggregate result of', aggregateResult)
+        selftestResponse.timestamp = new Date()
+        selftestResponse.aggregateResult = aggregateResult
+        selftestResponse.checks = checks
+        response.header('Content-Type', 'application/json; charset=utf-8')
+        response.status(200).send(JSON.stringify(selftestResponse))
+    }
 }

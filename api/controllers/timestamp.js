@@ -10,7 +10,7 @@ const Timestamp = function (obj) {
 };
 
 exports.createTimestamp = function () {
-    return function (request, res) {
+    return function (request, res, next) {
         const now = new Date()
         const jsonDate = now.toJSON();
         const time = new TimestampModel({
@@ -29,7 +29,7 @@ exports.createTimestamp = function () {
 };
 
 exports.deleteTimestamp = function () {
-    return function (request, res) {
+    return function (request, res, next) {
         TimestampModel.remove({}, function (err) {
             if (err) {
                 res.status(500).send("Error clearing timestamp: " + err)

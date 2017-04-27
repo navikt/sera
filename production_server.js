@@ -23,6 +23,9 @@ const logError = function (err, req, res, next) {
 }
 
 const errorHandler = function (err, req, res, next) {
+    if (res.headerSent) {
+        console.log(next(err))
+    }
     res.send({
         status: 500,
         message: err.message || 'internal error'
@@ -41,19 +44,11 @@ const httpsServer = https.createServer({
     cert: fs.readFileSync(config.tlsCert)
 }, app);
 
-if (process.env.NODE_ENV === 'test') {
-    mongoose.connect(config.dbUrlTest)
-    mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
-    httpsServer.listen(8869, function () {
-        logger.info('Running in test environment')
-        logger.info('Connected to MongoDB URL', config.dbUrlTest)
-        logger.info('Listening on port', 8869)
-    })
-} else {
-    mongoose.connect(config.dbUrl, { server: { reconnectTries: Number.MAX_VALUE  } }) // aldri gi opp reconnect
-    mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
-    httpsServer.listen(config.port, function () {
-        console.log(`
+
+mongoose.connect(config.dbUrl, {server: {reconnectTries: Number.MAX_VALUE}}) // aldri gi opp reconnect
+mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
+httpsServer.listen(config.port, function () {
+    console.log(`
   ______________________________    _____   
  /   _____/\\_   _____/\\______   \\  /  _  \\  
  \\_____  \\  |    __)_  |       _/ /  /_\\  \\ 
@@ -61,11 +56,10 @@ if (process.env.NODE_ENV === 'test') {
 /_______  //_______  / |____|_  /\____|__   /
         \\/         \\/         \\/         \\/ 
 `)
-        logger.info('Running in production environment')
-        logger.info('Connected to MongoDB URL', config.dbUrl)
-        logger.info('Listening on port', config.port)
-    })
-}
+    logger.info('Running in production environment')
+    logger.info('Connected to MongoDB URL', config.dbUrl)
+    logger.info('Listening on port', config.port)
+})
 
 
 module.exports = app
