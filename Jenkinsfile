@@ -35,7 +35,7 @@ node {
 
         stage("build frontend bundle") {
             withEnv(['HTTP_PROXY=http://webproxy-utvikler.nav.no:8088', 'NO_PROXY=adeo.no']) {
-                steps {
+                step {
                     echo 'installing modules and building front-end bundle'
                 }
                 // installing modules and building front-end bundle
