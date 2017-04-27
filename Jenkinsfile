@@ -76,8 +76,8 @@ node {
         }
 
         stage("selftests and integration tests") {
-
-
+            // testing aggregateresult, if 1 - abort further deployments
+            sh "curl -g -k -# https://e34apvl00182.devillo.no:8446/selftest | jq \".aggregateResult\" | grep 1 && exit 1"
         }
 //
 //        stage("deploy to production") {
