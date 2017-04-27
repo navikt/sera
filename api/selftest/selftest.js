@@ -85,7 +85,7 @@ const requestRestEndpoint = function (endpoint) {
                             errorMessage: error,
                         })
                     } else {
-                        checks.push({ // Ved feil etter at host er tilkoblet logges dette her
+                        checks.push({ // Ved feil etter at host svarer, logges dette her
                             endpoint: url,
                             result: 1,
                             errorMessage: response.statusCode,
@@ -96,8 +96,7 @@ const requestRestEndpoint = function (endpoint) {
                     callback()
                 }
             })
-        }, function
-            () {
+        }, function () {
             testInfluxDb()
         }
     )
@@ -118,7 +117,6 @@ const testInfluxDb = function () {
                 result: 0,
                 responseTime: response.elapsedTime
             })
-            testDatasourceConnection()
         } else {
             if (error) { // Ved feil i f.eks url logges selve feilmeldingen
                 checks.push({
@@ -127,7 +125,7 @@ const testInfluxDb = function () {
                     errorMessage: error,
                 })
             } else {
-                checks.push({ // Ved feil etter at host er tilkoblet logges dette her
+                checks.push({ // Ved feil etter at host svarer, logges dette her
                     endpoint: 'http://influxdb.adeo.no:8086',
                     result: 1,
                     errorMessage: response.statusCode,
@@ -135,8 +133,8 @@ const testInfluxDb = function () {
                 })
             }
             aggregateResult = 1
-            testDatasourceConnection()
         }
+        testDatasourceConnection(datasource)
     })
 }
 // Test av mongoDB. Oppretter ny connection i samme connection-pool. Resultat dyttes inn i checks
@@ -158,6 +156,7 @@ const createConnection = function (dbUrl, callback) {
             description: 'Test mot mongoDb',
             result: 0,
         })
+
         callback()
     })
     dbConnection.on('error', function (err) {
@@ -175,8 +174,9 @@ const createConnection = function (dbUrl, callback) {
 // Bygger selve JSON og sender response
 const buildAndReturnJSON = function () {
     logger.info('Selftest returned aggregate result of', aggregateResult)
-    selftestResponse.checks = checks
+    selftestResponse.timestamp = new Date()
     selftestResponse.aggregateResult = aggregateResult
+    selftestResponse.checks = checks
     response.header('Content-Type', 'application/json; charset=utf-8')
-    response.status(200).send(selftestResponse)
+    response.status(200).send(JSON.stringify(selftestResponse))
 }
