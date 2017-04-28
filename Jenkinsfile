@@ -77,7 +77,7 @@ node {
 
         stage("integration and self tests") {
             // testing aggregateresult, if 1 - abort further deployments
-            sh "curl -g -k -# https://e34apvl00182.devillo.no:8446/selftest | jq \".aggregateResult\" | grep 1 && echo skriver du dette uansett?"
+            sh "curl -g -k -# https://e34apvl00182.devillo.no:8446/selftest | jq '.aggregateResult' | grep 1 && echo skriver du dette uansett?"
         }
 //
 //        stage("deploy to production") {
