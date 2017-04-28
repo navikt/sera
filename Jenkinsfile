@@ -79,12 +79,12 @@ node {
             // testing aggregateresult, if not 0 or 2 - abort further deployments
             sh "curl -g -k -# https://e34apvl00182.devillo.no:8446/selftest | jq '.aggregateResult' | grep 2 || grep 0"
         }
-//
-//        stage("deploy to production") {
-//            withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'srvauraautodeploy', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-//                sh "${mvn} aura:deploy -Dapps=${application}:${releaseVersion} -Denv=p -Dusername=${env.USERNAME} -Dpassword=${env.PASSWORD} -Dorg.slf4j.simpleLogger.log.no.nav=debug -B -Ddebug=true -e"
-//            }
-//        }
+
+        stage("deploy to production") {
+            withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'srvauraautodeploy', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+                sh "${mvn} aura:deploy -Dapps=${application}:${releaseVersion} -Denv=p -Dusername=${env.USERNAME} -Dpassword=${env.PASSWORD} -Dorg.slf4j.simpleLogger.log.no.nav=debug -B -Ddebug=true -e"
+            }
+        }
 
 //        GString message = "${application}:${releaseVersion} now in production. See jenkins for more info ${env.BUILD_URL}\nLast commit ${changelog}"
 //        mail body: message, from: "jenkins@aura.adeo.no", subject: "SUCCESSFULLY completed ${env.JOB_NAME}!", to: committerEmail
