@@ -24,7 +24,7 @@ if (process.env.NODE_ENV === 'development') {
                 filename: './testlogs.log',
                 handleExceptions: true,
                 json: false,
-                maxsize: 5242880, //5MB
+                maxsize: 5242880,
                 maxFiles: 5,
                 colorize: false
             })
