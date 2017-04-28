@@ -33,35 +33,35 @@ node {
             sh "git push --tags"
         }
 
-//        stage("build frontend bundle") {
-//            withEnv(['HTTP_PROXY=http://webproxy-utvikler.nav.no:8088', 'NO_PROXY=adeo.no']) {
-//
-//                // installing modules and building front-end bundle
-//                sh "npm install && npm run build || exit 1"
-//                // copying files to docker image
-//                sh "mkdir -p ${distDir}"
-//                sh "cp -r production_server.js app.js package.json dist api app-config ${distDir}"
-//                // workaround for local variables being required production environment
-//                sh "echo {} > ${distDir}/localvars.json"
-//                // getting modules for production
-//                sh "cd ${distDir} && npm install --production || exit 1"
-//                sh "cp Dockerfile ${dockerDir}"
-//            }
-//        }
-//
-//        stage("run frontend unit tests") {
-//            sh "npm run test || exit 1"
-//        }
+        stage("build frontend bundle") {
+            withEnv(['HTTP_PROXY=http://webproxy-utvikler.nav.no:8088', 'NO_PROXY=adeo.no']) {
 
-//        stage("build and publish docker image") {
-//            def imageName = "docker.adeo.no:5000/${application}:${releaseVersion}"
-//            sh "sudo docker build -t ${imageName} ./docker"
-//            sh "sudo docker push ${imageName}"
-//        }
-//
-//        stage("publish app-config artifact") {
-//            sh "${mvn} clean deploy -f app-config/pom.xml -DskipTests -B -e"
-//        }
+                // installing modules and building front-end bundle
+                sh "npm install && npm run build || exit 1"
+                // copying files to docker image
+                sh "mkdir -p ${distDir}"
+                sh "cp -r production_server.js app.js package.json dist api app-config ${distDir}"
+                // workaround for local variables being required production environment
+                sh "echo {} > ${distDir}/localvars.json"
+                // getting modules for production
+                sh "cd ${distDir} && npm install --production || exit 1"
+                sh "cp Dockerfile ${dockerDir}"
+            }
+        }
+
+        stage("run frontend unit tests") {
+            sh "npm run test || exit 1"
+        }
+
+        stage("build and publish docker image") {
+            def imageName = "docker.adeo.no:5000/${application}:${releaseVersion}"
+            sh "sudo docker build -t ${imageName} ./docker"
+            sh "sudo docker push ${imageName}"
+        }
+
+        stage("publish app-config artifact") {
+            sh "${mvn} clean deploy -f app-config/pom.xml -DskipTests -B -e"
+        }
 
 //        stage("jilease") {
 //            withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'jiraServiceUser', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
@@ -69,16 +69,15 @@ node {
 //            }
 //        }
 
-//        stage("deploy to cd-u1") {
-//            withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'srvauraautodeploy', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-//                sh "${mvn} aura:deploy -Dapps=${application}:${releaseVersion} -Denv=cd-u1 -Dusername=${env.USERNAME} -Dpassword=${env.PASSWORD} -Dorg.slf4j.simpleLogger.log.no.nav=debug -B -Ddebug=true -e"
-//            }
-//        }
+        stage("deploy to cd-u1") {
+            withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'srvauraautodeploy', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+                sh "${mvn} aura:deploy -Dapps=${application}:${releaseVersion} -Denv=cd-u1 -Dusername=${env.USERNAME} -Dpassword=${env.PASSWORD} -Dorg.slf4j.simpleLogger.log.no.nav=debug -B -Ddebug=true -e"
+            }
+        }
 
         stage("integration and self tests") {
-            // testing aggregateresult, if 1 - abort further deployments
+            // testing aggregateresult, if not 0 or 2 - abort further deployments
             sh "curl -g -k -# https://e34apvl00182.devillo.no:8446/selftest | jq '.aggregateResult' | grep 2 || grep 0"
-            sh "echo OK"
         }
 //
 //        stage("deploy to production") {
