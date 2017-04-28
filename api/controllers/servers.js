@@ -51,6 +51,7 @@ function enrichElements(incomingDataElements, incomingDataResponse) {
             incomingDataElement.notes = incomingDataElement.Notes2 // change key Notes to notes
             delete incomingDataElement.Notes2
         } else if (incomingDataElement.Notes) {
+            console.log(incomingDataElement.Notes)
             incomingDataElement.notes = incomingDataElement.Notes // change key Notes2 to notes
             delete incomingDataElement.Notes
         }
