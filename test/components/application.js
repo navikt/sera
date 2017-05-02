@@ -41,7 +41,7 @@ describe('(Component) Application', () => {
 describe('(Component) Application lifecycle tests', () => {
     beforeEach(() => {
         fetchMock.get('/api/v1/servers', mockPayload);
-        fetchMock.get('/api/v1/hourssincelastupdate', "2"); // two hours since last payload from orchestrator
+        fetchMock.get('/api/v1/hourssincelastupdate', "4"); // two hours since last payload from orchestrator
     });
 
     it('renders empty serverlist based on the initial state (empty ´items´ array)', () => {
