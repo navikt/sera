@@ -10,8 +10,15 @@ const config = require('./api/config/config')
 
 const app = new express();
 
+const cors = function (req, res, next) {
+    res.setHeader("Access-Control-Allow-Origin", "*")
+    return next();
+};
+
 logger.debug("Overriding, 'Express' logger")
 app.use(require('morgan')('short', {stream: logger.stream}))
+
+app.use(cors)
 
 app.use(express.static(__dirname + "/dist"))
 app.use(bodyParser.json({type: '*/*', limit: '50mb'}))

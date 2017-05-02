@@ -126,7 +126,7 @@ export default class Application extends React.Component {
         fetch('/api/v1/hourssincelastupdate')
             .then((res) => res.json())
             .then((data) => {
-                if (data > 1) {
+                if (data > 3) {
                     this.setState({
                         isDatabaseUpdateWarningShowing: true
                     })
