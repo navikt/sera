@@ -180,7 +180,7 @@ const checkDataImport = function () {
         url: 'https://localhost:8443/api/v1/hourssincelastupdate',
         time: true
     }, function (error, response) {
-        if (!error && response.body === "0") {
+        if (!error && response.body < "8") {
             checks.push({
                 endpoint: '/api/v1/hourssincelastupdate',
                 description: 'Test av dataimport',
@@ -192,10 +192,10 @@ const checkDataImport = function () {
                 endpoint: '/api/v1/hourssincelastupdate',
                 description: 'Test av dataimport',
                 result: 2,
-                errorMessage: 'Det er over en time siden siste dataimport, det er mulig ekportjobben i orchestrator har stoppet',
+                errorMessage: 'Serverdata er over 8 timer gammel, det kan være problemer med skeduelert utrekk fra Orchestrator/vCenter',
                 responseTime: response.elapsedTime
             })
-            aggregateResult = 2
+            if (aggregateResult === 0) aggregateResult = 2
         }
         buildAndReturnJSON()
     })

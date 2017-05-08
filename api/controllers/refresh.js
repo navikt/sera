@@ -26,8 +26,11 @@ exports.refresh = function () {
                 response.status(200).send('Orchestrator execution of workflow extract all VMs ID:', config.workflowID.substring(3), 'started')
             } else {
                 if (!err) {
+                    logger.error(res.statusCode)
+                    logger.error(res.body)
                     response.status(500).send(res.body)
                 } else {
+                    logger.error(err)
                     response.status(500).send(err)
                 }
             }
