@@ -7,7 +7,8 @@ const https = require('https')
 const mongoose = require('mongoose')
 const logger = require('./api/logger')
 const config = require('./api/config/config')
-const triggerRefresh = require('./api/controllers/refresh')
+const requestData = require('./api/controllers/refresh')
+
 
 const app = new express();
 
@@ -15,6 +16,8 @@ const cors = function (req, res, next) {
     res.setHeader("Access-Control-Allow-Origin", "*")
     return next();
 };
+
+setInterval(requestData.callOrchestrator(), 7200000) // Starter orchestratoer worflow for import av data hver 2. time
 
 logger.debug("Overriding, 'Express' logger")
 app.use(require('morgan')('short', {stream: logger.stream}))
@@ -52,7 +55,6 @@ const httpsServer = https.createServer({
     cert: fs.readFileSync(config.tlsCert)
 }, app);
 
-console.log(triggerRefresh.callOrchestrator())
 
 mongoose.connect(config.dbUrl, {server: {reconnectTries: Number.MAX_VALUE}}) // aldri gi opp reconnect
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
