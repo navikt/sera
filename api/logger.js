@@ -10,6 +10,7 @@ if (process.env.NODE_ENV === 'development') {
             new winston.transports.Console({
                 level: 'debug',
                 handleExceptions: true,
+                timestamp: true,
                 json: false,
                 colorize: true
             })
@@ -38,6 +39,7 @@ if (process.env.NODE_ENV === 'development') {
             new winston.transports.Console({
                 level: 'info',
                 handleExceptions: true,
+                timestamp: true,
                 json: false,
                 colorize: false
             })

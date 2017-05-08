@@ -1,4 +1,0 @@
---compilers js:babel-register
---recursive ./test
---timeout 5000
---no-deprecation

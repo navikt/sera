@@ -7,6 +7,7 @@ const https = require('https')
 const mongoose = require('mongoose')
 const logger = require('./api/logger')
 const config = require('./api/config/config')
+const triggerRefresh = require('./api/controllers/refresh')
 
 const app = new express();
 
@@ -51,6 +52,7 @@ const httpsServer = https.createServer({
     cert: fs.readFileSync(config.tlsCert)
 }, app);
 
+console.log(triggerRefresh.callOrchestrator())
 
 mongoose.connect(config.dbUrl, {server: {reconnectTries: Number.MAX_VALUE}}) // aldri gi opp reconnect
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'))

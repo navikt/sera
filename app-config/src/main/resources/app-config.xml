@@ -13,12 +13,15 @@
     </exposed-services>
 
     <resources>
+        <applicationProperties alias="extractAllVmInfo"/>
         <datasource alias="seraDb" />
         <rest alias="costService" />
         <rest alias="units_v1" />
         <rest alias="fasit:nodes_v2" />
+        <rest alias="orcProdService" />
         <baseUrl alias="influxdb" />
         <credential alias="influxdb" />
+        <credential alias="srvsera" />
     </resources>
 
     <monitoring>

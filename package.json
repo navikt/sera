@@ -15,7 +15,8 @@
     "start": "better-npm-run start",
     "build": "better-npm-run build",
     "dev": "better-npm-run dev",
-    "test": "better-npm-run test"
+    "unittest": "better-npm-run unittest",
+    "integrationtest": "better-npm-run integrationtest"
   },
   "betterScripts": {
     "start": {
@@ -39,10 +40,17 @@
         "PORT": 8443
       }
     },
-    "test": {
-      "command": "mocha",
+    "unittest": {
+      "command": "mocha --compilers js:babel-register --recursive ./test/components ./test/logic --timeout 5000 --no-deprecation",
       "env": {
         "NODE_ENV": "test"
+      }
+    },
+    "integrationtest": {
+      "command": "mocha --compilers js:babel-register --recursive ./test/integration --timeout 5000 --no-deprecation",
+      "env": {
+        "NODE_ENV": "test",
+        "NODE_TLS_REJECT_UNAUTHORIZED": 0
       }
     },
     "clean": {

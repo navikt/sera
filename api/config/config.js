@@ -1,10 +1,6 @@
 const path = require('path')
 const rootPath = path.normalize(__dirname + '/..')
-let localVars
-
-if (process.env.NODE_ENV === 'test' || 'development') {
-    localVars = require('../../localvars')
-}
+const localVars = require('../../localvars')
 
 const config = {
     root: rootPath,
@@ -21,7 +17,11 @@ const config = {
     noraUrl: 'https://nora.adeo.no/api/v1/units',
     influxUrl: process.env['influxdb_url'] || localVars.influxUrl,
     influxUser: process.env['influxdb_username'] || localVars.influxUser,
-    influxPassword: process.env['influxdb_password'] || localVars.influxPassword
+    influxPassword: process.env['influxdb_password'] || localVars.influxPassword,
+    orchestratorUrl: process.env['orcProdService'] || 'https://orcprod.adeo.no:443/vco/api/',
+    workflowID: process.env['extractAllVmInfo'] || 'ID=4e70e990-7096-4f00-b811-a2f35a8de726',
+    srvseraUser: process.env['srvsera_username'] || localVars.srvseraUser,
+    srvseraPassword: process.env['srvsera_password'] || localVars.srvseraPassword
 }
 
 module.exports = config
