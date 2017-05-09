@@ -50,7 +50,7 @@ node {
         }
 
         stage("run frontend unit tests") {
-            sh "npm run test || exit 1"
+            sh "npm run unittest || exit 1"
         }
 
         stage("build and publish docker image") {
