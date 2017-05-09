@@ -13,7 +13,7 @@ exports.refresh = function () {
                 user: config.srvseraUser,
                 pass: config.srvseraPassword
             },
-            url: config.orchestratorUrl + 'workflows/' + config.workflowID.substring(3) + '/executions', // Fjerner key felt fra application property
+            url: config.orchestratorUrl + 'workflows/' + config.workflowID + '/executions', // Fjerner key felt fra application property
             json: true,
             body: {
                 "parameters": [
@@ -22,8 +22,8 @@ exports.refresh = function () {
             }
         }, function (err, res) {
             if (!err && res.statusCode === 202) {
-                logger.info('Orchestrator execution of workflow extract all VMs ID:', config.workflowID.substring(3), 'started')
-                response.status(200).send('Orchestrator execution of workflow extract all VMs ID:', config.workflowID.substring(3), 'started')
+                logger.info('Orchestrator execution of workflow extract all VMs ID:', config.workflowID, 'started')
+                response.status(200).send('Orchestrator execution of workflow extract all VMs ID:', config.workflowID, 'started')
             } else {
                 if (!err) {
                     logger.error(res.statusCode)
@@ -45,7 +45,7 @@ exports.callOrchestrator = function () {
                 user: config.srvseraUser,
                 pass: config.srvseraPassword
             },
-            url: config.orchestratorUrl + 'workflows/' + config.workflowID.substring(3) + '/executions',
+            url: config.orchestratorUrl + 'workflows/' + config.workflowID + '/executions',
             json: true,
             body: {
                 "parameters": [
@@ -54,7 +54,7 @@ exports.callOrchestrator = function () {
             }
         }, function (err, res) {
             if (!err && res.statusCode === 202) {
-                logger.info('Orchestrator execution of workflow extract all VMs ID:', config.workflowID.substring(3), 'started')
+                logger.info('Orchestrator execution of workflow extract all VMs ID:', config.workflowID, 'started')
             } else {
                 if (!err) {
                     logger.error(res.body)
