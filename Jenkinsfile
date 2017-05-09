@@ -75,10 +75,9 @@ node {
             }
         }
 
-//        stage("integration and self tests") {
-//            // testing aggregateresult, if not 0 or 2 - abort further deployments
-//            sh "curl -g -k -# https://e34apvl00182.devillo.no:8446/selftest | jq '.aggregateResult' | grep 2 || grep 0"
-//        }
+        stage("integration tests") {
+            sh "npm run integrationtest"
+        }
 
 //        stage("deploy to production") {
 //            withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'srvauraautodeploy', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
