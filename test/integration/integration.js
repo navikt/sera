@@ -4,7 +4,7 @@ const should = chai.should();
 const request = require('request')
 
 //Disse variablebe må endres manuelt hvis f.eks endepunkt endres eller testserverene slettes.
-const seraHost = 'https://e34apvl00182.devillo.no:8446/'
+const seraHost = 'https://e34apvl00182.devillo.no:8446'
 const testServers = ['a01apvl00006.adeo.no', 'e34apvl00182.devillo.no']
 
 
