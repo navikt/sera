@@ -30,7 +30,7 @@ const makeHttpRequest = function (requestString, servers, mergeData, writeToDb, 
     }
 
     HTTPRequest(options, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
+        if (!error && response.statusCode === 200) {
             const influxResponse = JSON.parse(body)
             mergeData(servers, influxResponse, writeToDb, incomingDataResponse)
         } else {

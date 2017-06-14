@@ -5,7 +5,7 @@ const mongoose = require('mongoose')
 const ServerMongoModel = require('../models/servermongo')
 const ServerDefinition = require('../models/server')
 const timestamp = require('../controllers/timestamp')
-const influx = require('./influx')
+const influx = require('./influx2')
 const mongo = require('./mongo')
 const config = require('../config/config')
 const logger = require('../logger')
@@ -125,8 +125,9 @@ function enrichElements(incomingDataElements, incomingDataResponse) {
                             logger.info("Enriched elements with data from Nora: ", noraEnrichedElements.length)
 
                             /////////////////Henter metrics her//////////////////
-                            mongo.updateDatabase(noraEnrichedElements, incomingDataResponse)
-                            //influx.enrichWithDataFromInflux(noraEnrichedElements, mongo.updateDatabase, incomingDataResponse)
+                            // mongo.updateDatabase(noraEnrichedElements, incomingDataResponse)
+                            // influx.enrichWithDataFromInflux(noraEnrichedElements, mongo.updateDatabase, incomingDataResponse)
+                            influx.fetchData(noraEnrichedElements)
 
 
                         }

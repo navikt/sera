@@ -9,6 +9,7 @@ const webpackConfig = require('./webpack.config.dev.js')
 const webpack = require('webpack')
 const logger = require('./api/logger')
 
+
 const serverOptions = {
     quiet: false,
     noInfo: false,
@@ -34,5 +35,6 @@ var httpsServer = https.createServer({
 httpsServer.listen(config.port, function () {
     logger.info('==> Up and running @ %s', config.port)
 });
+
 
 module.exports = app;

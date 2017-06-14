@@ -9,7 +9,7 @@ export default class AlertBox extends React.Component {
                 </div>
                 <div className="alert-text">
                     <strong>Obs!</strong><br />
-                    Gammal drit i databasen, kontakt noen som kan fikse sånt!
+                    Gammal drit i databasen, kontakt noen som kan fikse sånt.
                 </div>
                 <div>
                     <button
@@ -20,6 +20,6 @@ export default class AlertBox extends React.Component {
                     </button>
                 </div>
             </div>
-        );
+        )
     }
-};
+}
