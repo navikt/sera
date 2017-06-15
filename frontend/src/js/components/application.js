@@ -70,6 +70,7 @@ export default class Application extends React.Component {
         this.getServersFromBackend()
         this.getTimestampFromBackend()
 
+
     }
 
 
@@ -182,10 +183,6 @@ export default class Application extends React.Component {
             server.rpm_rpm = 'n/a'
         }
 
-        if (!server.rpm_cluster) {
-            server.rpm_cluster = 'n/a'
-        }
-
         if (!server.rpm_version) {
             server.rpm_version = 'n/a'
         }
@@ -198,6 +195,7 @@ export default class Application extends React.Component {
 
 
     toggleVisibility(column) {
+        console.log(this.state.items)
         const visibility = Object.assign({}, this.state.visibility, {
             [column]: !this.state.visibility[column]
         });
@@ -235,7 +233,6 @@ export default class Application extends React.Component {
         }
     }
 
-
     applyHeaderFilter(items, regexpMode) {
         if (regexpMode) {
             return this.filterWithPreCompiledRegexp(items);
@@ -252,8 +249,6 @@ export default class Application extends React.Component {
             && elem.unit.toLowerCase().indexOf(this.state.filters.unit.toLowerCase()) > -1
             && elem.site.toLowerCase().indexOf(this.state.filters.site.toLowerCase()) > -1
             && elem.rpm_rpm.toLowerCase().indexOf(this.state.filters.rpm_rpm.toLowerCase()) > -1
-            && elem.rpm_cluster.toLowerCase().indexOf(this.state.filters.rpm_cluster.toLowerCase()) > -1
-            && elem.rpm_version.toLowerCase().indexOf(this.state.filters.rpm_version.toLowerCase()) > -1
             && elem.rpm_time.toLowerCase().indexOf(this.state.filters.rpm_time.toLowerCase()) > -1
             && elem.notes.toLowerCase().indexOf(this.state.filters.notes.toLowerCase()) > -1
             && elem.created.toLowerCase().indexOf(this.state.filters.created.toLowerCase()) > -1
