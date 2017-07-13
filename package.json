@@ -1,7 +1,7 @@
 {
   "name": "sera",
   "description": "server information application",
-  "version": "241.0.0",
+  "version": "242.0.0",
   "url": "http://sera.adeo.no",
   "repository": {
     "type": "git",
