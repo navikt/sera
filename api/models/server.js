@@ -49,7 +49,7 @@ module.exports = {
     },
     site: {
         mongoSchemaDefinition: {type: String, lowercase: true},
-        schemaType: {'enum': ['so8', 'u89']}
+        schemaType: {'enum': ['so8', 'u89', 'metro']}
     },
     custom: {
         mongoSchemaDefinition: {type: Boolean},
