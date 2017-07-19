@@ -8,7 +8,7 @@ const logger = require('../logger')
 
 
 exports.updateDatabase = function (servers, incomingDataResponse) {
-    logger.info("Clearing previous data import timestamp");
+    logger.info("Clearing previous data import timestamp")
     TimestampModel.remove({}, function (err) {
         if (err) {
             logger.error("Unable to delete timestamps:", err)
@@ -22,7 +22,7 @@ exports.updateDatabase = function (servers, incomingDataResponse) {
         } else {
             logger.info("Sera Database cleared")
             // Save elements to database
-            logger.info("Setting timestamp for data import");
+            logger.info("Setting timestamp for data import")
             ServerMongoModel.collection.insert(servers, function (err, docs) {
                 if (err) {
                     logger.error(err.message)
@@ -31,14 +31,14 @@ exports.updateDatabase = function (servers, incomingDataResponse) {
                     incomingDataResponse.status(201).send(docs.ops.length + " servers created")
                     // Create timestamp after successful import of data
                     const now = new Date()
-                    const jsonDate = now.toJSON();
+                    const jsonDate = now.toJSON()
                     const time = new TimestampModel({
                         timestamp: jsonDate
-                    });
+                    })
                     time.save(function (err) {
                         if (err) throw err;
                         logger.info("Timestamp: " + jsonDate + " saved in database")
-                    });
+                    })
                 }
             })
         }

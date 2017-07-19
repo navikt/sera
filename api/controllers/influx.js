@@ -3,9 +3,9 @@ const logger = require('../logger')
 const config = require('../config/config')
 
 let influxObjects = []
-let servers = []
-let writeToDb
-let incomingDataResponse
+let servers = undefined
+let writeToDb = undefined
+let incomingDataResponse = undefined
 
 const queryString = '/query?q=select+hostname%2C+rpm%2C+last(version)+from+%22rpm.install%22+where+rpm+!~+%2F%5Enav%2F+group+by+hostname%2C+rpm&db=metrics'
 
