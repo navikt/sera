@@ -1,17 +1,8 @@
 const React = require('react');
 import OptionsPopover  from './optionspopover.js'
 import AuraToolsPopover from './auratoolspopover.js'
-const Mousetrap = require('mousetrap')
 
 export default class TopNav extends React.Component {
-
-    componentDidMount() {
-        Mousetrap.bind(['esc'], this.props.clearFilters)
-    }
-
-    componentWillUnmount() {
-        Mousetrap.bind(['esc'], this.props.clearFilters)
-    }
 
     render() {
         return (
