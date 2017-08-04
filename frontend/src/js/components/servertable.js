@@ -1,11 +1,16 @@
 import React from 'react'
-const ReactBsTable = require('react-bootstrap-table');
-const BootstrapTable = ReactBsTable.BootstrapTable;
-const TableHeaderColumn = ReactBsTable.TableHeaderColumn;
-const OverlayTrigger = require('react-bootstrap').OverlayTrigger;
-const Tooltip = require('react-bootstrap').Tooltip;
+const ReactBsTable = require('react-bootstrap-table')
+const BootstrapTable = ReactBsTable.BootstrapTable
+const TableHeaderColumn = ReactBsTable.TableHeaderColumn
+const OverlayTrigger = require('react-bootstrap').OverlayTrigger
+const Tooltip = require('react-bootstrap').Tooltip
 
 export default class Servertable extends React.Component {
+
+    componentDidMount() {
+        this.nameInput.focus()
+    }
+
 
     render() {
 
@@ -15,27 +20,27 @@ export default class Servertable extends React.Component {
                     <div className="loader"></div>
                 </div>
             )
-        };
+        }
 
         const tooltip = function (status) {
             return <Tooltip id="Serverstatus">{status}</Tooltip>
-        };
+        }
 
         const iconFormatter = function (cell, row) {
-            let statusColor = "fa fa-lg fa-power-off text-success";
+            let statusColor = "fa fa-lg fa-power-off text-success"
 
             if (cell === "poweredOff") {
-                statusColor = "fa fa-lg fa-power-off text-danger";
+                statusColor = "fa fa-lg fa-power-off text-danger"
             }
             else if (cell === "suspended") {
-                statusColor = "fa fa-lg fa-power-off text-info";
+                statusColor = "fa fa-lg fa-power-off text-info"
             }
             return (
                 <OverlayTrigger placement="top" overlay={tooltip(cell)}>
                     <i className={statusColor}> </i>
                 </OverlayTrigger>
             )
-        };
+        }
 
         return (
             <div>
@@ -53,7 +58,7 @@ export default class Servertable extends React.Component {
                     </TableHeaderColumn>
                     <TableHeaderColumn dataField="hostname" isKey={true} hidden={!this.props.visibility.hostname}>
                         <input
-                            ref={this.props.filters.hostname}
+                            ref={ (input) => { this.nameInput = input } }
                             id=''
                             type="text"
                             className="form-control input-sm"

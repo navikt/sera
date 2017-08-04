@@ -94,6 +94,7 @@ export default class Application extends React.Component {
                         visibility={this.state.visibility}
                         servers={serversToRender}
                         filteredServers={filteredServers}
+                        clearFilters={() => this.clearFilters()}
                         handleChange={(event, value) => this.handleChange(event, value)}
                     />
                     <Sigmarow
