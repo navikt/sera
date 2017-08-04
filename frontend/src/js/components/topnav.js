@@ -8,7 +8,8 @@ export default class TopNav extends React.Component {
         return (
             <div className="sera-topnav-container">
                 <div className="sera-topnav-logo">
-                    <div className="sera-topnav-big-letter">
+                    <div className="sera-topnav-big-letter"
+                         onClick={this.props.clearFilters}>
                         S
                     </div>
                     <div className="sera-topnav-logo-text">
