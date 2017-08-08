@@ -16,7 +16,9 @@ export default class Servertable extends React.Component {
 
         const tableOptions = {
             noDataText: (
-                "No data found."
+                <div className="loader-container">
+                    <div className="loader"></div>
+                </div>
             )
         }
 
