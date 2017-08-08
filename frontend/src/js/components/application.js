@@ -90,6 +90,7 @@ export default class Application extends React.Component {
                 />
                 <div className="server-table-container">
                     <Servertable
+                        ref={(ch) => this.child = ch}
                         filters={this.state.filters}
                         visibility={this.state.visibility}
                         servers={serversToRender}
@@ -301,6 +302,7 @@ export default class Application extends React.Component {
         this.setState({
             filters: filters
         });
+        this.child.nameInput.focus();
     }
 
     toggleRegexpMode() {
