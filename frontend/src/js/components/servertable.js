@@ -14,8 +14,8 @@ export default class Servertable extends React.Component {
 
     isFilterUsed() {
         let filterUsed = false;
-        for(let value of Object.values(this.props.filters)){
-            if(value.length > 0)
+        for(let key of Object.keys(this.props.filters)){
+            if(this.props.filters[key].length > 0)
             {
                 filterUsed = true;
                 break;
