@@ -12,13 +12,26 @@ export default class Servertable extends React.Component {
     }
 
 
-    render() {
+    isFilterUsed() {
+        let filterUsed = false;
+        for(let value of Object.values(this.props.filters)){
+            if(value.length > 0)
+            {
+                filterUsed = true;
+                break;
+            }
+        }
+        return filterUsed;
+    }
 
+
+    render() {
         const tableOptions = {
             noDataText: (
+                this.isFilterUsed() == false ?
                 <div className="loader-container">
                     <div className="loader"></div>
-                </div>
+                </div> : "No data found."
             )
         }
 
