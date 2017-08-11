@@ -174,10 +174,15 @@ var buildCocaRequest = function (elements) {
 var returnCSVPayload = function (servers, res) {
     // dynamically create CSV mapping object (csv-header) based on js-object
     var createCSVMapping = function (servers) {
-        var createMappingObject = function (item) {
-            var mappingObjectArray = []
+        var mappingObjectArray = []
+        var createMappingObject = function (item, parentKey) {
             for (var key in item) {
-                mappingObjectArray.push({name: key, label: key})
+                if (typeof item[key] === 'object') {
+                    return createMappingObject(item[key], key);
+                }
+                let fieldName = key.toString()
+                if(parentKey != null ){ fieldName = parentKey + "." + fieldName}
+                mappingObjectArray.push({name: fieldName, label: fieldName})
             }
             return mappingObjectArray
         }
