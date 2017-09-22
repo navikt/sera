@@ -1,4 +1,3 @@
-
 node {
     def mvnHome, mvn, nodeHome, npm, node // tools
     def committer, committerEmail, changelog, releaseVersion // metadata
@@ -89,14 +88,26 @@ node {
             sh "chmod +x selftest.sh && ./selftest.sh"
         }
 
+        if (currentBuild.result == null) {
+            currentBuild.result = "SUCCESS"
+        }
+    } catch (err) {
+        if (currentBuild.result == null) {
+            currentBuild.result = "FAILURE"
+        }
+        throw err
+    } finally {
+        step([$class       : 'InfluxDbPublisher',
+              customData   : null,
+              customDataMap: null,
+              customPrefix : 'aura_pipeline',
+              target       : 'influxDB'])
+    }
+
 //        GString message = "${application}:${releaseVersion} now in production. See jenkins for more info ${env.BUILD_URL}\nLast commit ${changelog}"
 //        mail body: message, from: "jenkins@aura.adeo.no", subject: "SUCCESSFULLY completed ${env.JOB_NAME}!", to: committerEmail
 //        def successmessage = "Successfully deployed fasit-frontend:${releaseVersion} to prod\nhttps://fasit-frontend.adeo.no"
 //        hipchatSend color: 'GREEN', message: successmessage, textFormat: true, room: 'AuraInternal', v2enabled: true
-
-    } catch(e) {
-        currentBuild.result = "FAILED"
-        throw e
 
 //        GString message = "AIAIAI! Your last commit on ${application} didn't go through. See log for more info ${env.BUILD_URL}\nLast commit ${changelog}"
 //        mail body: message, from: "jenkins@aura.adeo.no", subject: "FAILED to complete ${env.JOB_NAME}", to: committerEmail
@@ -104,11 +115,5 @@ node {
 //        def errormessage = "see jenkins for more info ${env.BUILD_URL}\nLast commit ${changelog}"
 //        hipchatSend color: 'RED', message: "@all ${env.JOB_NAME} failed\n${errormessage}", textFormat: true, notify: true, room: 'AuraInternal', v2enabled: true
 
-    } finally {
-        step([$class: 'InfluxDbPublisher',
-              customData: null,
-              customDataMap: null,
-              customPrefix: 'aura',
-              target: 'influxDB'])
-    }
+
 }
