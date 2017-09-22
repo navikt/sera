@@ -90,10 +90,12 @@ export default class Application extends React.Component {
                 />
                 <div className="server-table-container">
                     <Servertable
+                        ref={(ch) => this.child = ch}
                         filters={this.state.filters}
                         visibility={this.state.visibility}
                         servers={serversToRender}
                         filteredServers={filteredServers}
+                        clearFilters={() => this.clearFilters()}
                         handleChange={(event, value) => this.handleChange(event, value)}
                     />
                     <Sigmarow
@@ -300,6 +302,7 @@ export default class Application extends React.Component {
         this.setState({
             filters: filters
         });
+        this.child.nameInput.focus();
     }
 
     toggleRegexpMode() {

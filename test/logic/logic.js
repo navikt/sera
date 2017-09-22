@@ -95,7 +95,7 @@ describe('(Function) filterWithPreCompiledRegexp', () => {
 
 describe('(Function) clearFilters', () => {
     it('successfully resets state of ´filters´', () => {
-        let wrapper = shallow(<Application />)
+        let wrapper = mount(<Application />)
         wrapper.setState({filters: mockFilters})
         wrapper.instance().clearFilters()
         expect(wrapper.state().filters.hostname).to.equal('')
