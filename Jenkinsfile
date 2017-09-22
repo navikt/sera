@@ -100,7 +100,7 @@ node {
         step([$class       : 'InfluxDbPublisher',
               customData   : null,
               customDataMap: null,
-              customPrefix : 'aura_pipeline',
+              customPrefix : null,
               target       : 'influxDB'])
     }
 
