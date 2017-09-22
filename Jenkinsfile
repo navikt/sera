@@ -104,5 +104,11 @@ node {
 //        def errormessage = "see jenkins for more info ${env.BUILD_URL}\nLast commit ${changelog}"
 //        hipchatSend color: 'RED', message: "@all ${env.JOB_NAME} failed\n${errormessage}", textFormat: true, notify: true, room: 'AuraInternal', v2enabled: true
 
+    } finally {
+        step([$class: 'InfluxDbPublisher',
+              customData: null,
+              customDataMap: null,
+              customPrefix: 'aura',
+              target: 'influxDB'])
     }
 }
