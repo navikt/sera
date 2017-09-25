@@ -74,9 +74,9 @@ node {
             }
         }
 
-        stage("integration tests") {
-            sh "npm run integrationtest"
-        }
+//        stage("integration tests") {
+//            sh "npm run integrationtest"
+//        }
 
         stage("deploy to production") {
             withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'srvauraautodeploy', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
