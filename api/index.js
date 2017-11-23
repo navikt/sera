@@ -35,7 +35,6 @@ app.use(errorHandler)
 
 mongoose.Promise = require('bluebird')
 
-
 if (process.env.NODE_ENV === 'production') {
     mongoose.connect(config.dbUrl, {
         useMongoClient: true

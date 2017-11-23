@@ -1,15 +1,15 @@
 {
   "name": "sera",
   "description": "server information application",
-  "version": "267.0.0",
+  "version": "272.0.0",
   "url": "http://sera.adeo.no",
   "repository": {
     "type": "git",
     "url": "http://stash.devillo.no/scm/aura/sera.git"
   },
   "author": {
-    "name": "Johnny Horvi",
-    "email": "johnny.horvi@nav.no"
+    "name": "Even Haasted",
+    "email": "even.haasted@nav.no"
   },
   "scripts": {
     "start": "better-npm-run start",
@@ -37,7 +37,7 @@
       "env": {
         "NODE_PATH": "./",
         "NODE_ENV": "development",
-        "PORT": 8443
+        "PORT": 80
       }
     },
     "unittest": {
