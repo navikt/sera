@@ -91,7 +91,8 @@ node {
 
         stage("update version") {
             currentVersion = sh "echo ${releaseVersion} | cut -d. -f1" 
-            newVersion = (currentVersion.toInteger() + 1) + ".0.0"
+            sh "echo ${releaseVersion} && echo ${currentVersion}"
+            def newVersion = (currentVersion.toInteger() + 1) + ".0.0"
             sh "sed -i 's/\"version\": \"'${releaseVersion}'\"/\"version\": \"'${newVersion}'\"/g' package.json"
             sh "git push origin master"
         }
