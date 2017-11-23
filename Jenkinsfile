@@ -7,7 +7,7 @@ node {
     def application = "sera"
     def dockerDir = "./docker"
     def distDir = "${dockerDir}/dist"
-    def currentVersion, nextVersion, releaseVersion
+    def nextVersion, releaseVersion
 
 
     try {
@@ -64,6 +64,7 @@ node {
         stage("set version") {
             sh "git tag -a ${application}-${releaseVersion} -m ${application}-${releaseVersion}"
 			sh "git push --tags" 
+            sh "git push origin master"
         }
 
         stage("deploy to !prod") {
@@ -87,14 +88,6 @@ node {
                 withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'srvauraautodeploy', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
                     sh "curl -k -d \'{\"application\": \"${application}\", \"version\": \"${releaseVersion}\", \"environment\": \"p\", \"zone\": \"fss\", \"namespace\": \"default\", \"username\": \"${env.USERNAME}\", \"password\": \"${env.PASSWORD}\"}\' https://daemon.nais.adeo.no/deploy"
                 }
-        }
-
-        stage("update version") {
-            currentVersion = sh "echo ${releaseVersion} | cut -d. -f1" 
-            sh "echo ${releaseVersion} && echo ${currentVersion}"
-            def newVersion = (currentVersion.toInteger() + 1) + ".0.0"
-            sh "sed -i 's/\"version\": \"'${releaseVersion}'\"/\"version\": \"'${newVersion}'\"/g' package.json"
-            sh "git push origin master"
         }
 
         slackSend channel: '#nais-internal', message: ":nais: Successfully deployed ${application}:${releaseVersion} to prod :partyparrot: \nhttps://${application}.nais.adeo.no\nLast commit by ${committer}.", teamDomain: 'nav-it', tokenCredentialId: 'slack_fasit_frontend'
