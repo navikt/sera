@@ -11,10 +11,7 @@ module.exports = function (app) {
 
     app.get('/api/v1/refresh', refresh.refresh())
 
-    app.get('/metrics', metrics.getMetrics())
-    app.get('/isalive', metrics.isAlive())
-    app.get('/selftest', selftest.selftest())
-
+    // app.get('/selftest', selftest.selftest())
 
     //datakvalitet
     app.get('/api/v1/hoursSinceLastUpdate', timestamp.getHoursSinceLastDbUpdate())

@@ -3,11 +3,13 @@ const path = require('path')
 const express = require('express')
 const bodyParser = require('body-parser')
 const fs = require('fs')
-const https = require('https')
+const http = require('http')
 const mongoose = require('mongoose')
 const logger = require('./api/logger')
 const config = require('./api/config/config')
 const requestData = require('./api/controllers/refresh')
+const prometheus = require('prom-client')
+
 
 
 const app = new express();
@@ -26,6 +28,20 @@ app.use(cors)
 
 app.use(express.static(__dirname + "/dist"))
 app.use(bodyParser.json({type: '*/*', limit: '50mb'}))
+
+app.get("/isready", (req, res) => {
+    res.sendStatus(200)
+});
+
+app.get("/isalive", (req, res) => {
+    res.sendStatus(200)
+});
+
+app.get('/metrics', (req, res) => {
+    res.set('Content-Type', prometheus.register.contentType);
+    res.end(prometheus.register.metrics());
+});
+
 require('./api/config/routes')(app)
 
 const logError = function (err, req, res, next) {
@@ -50,15 +66,9 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, './dist/index.html'));
 })
 
-const httpsServer = https.createServer({
-    key: fs.readFileSync(config.tlsPrivateKey),
-    cert: fs.readFileSync(config.tlsCert)
-}, app);
-
-
 mongoose.connect(config.dbUrl, {server: {reconnectTries: Number.MAX_VALUE}}) // aldri gi opp reconnect
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
-httpsServer.listen(config.port, function () {
+app.listen(config.port, function () {
     console.log(`
   ______________________________    _____   
  /   _____/\\_   _____/\\______   \\  /  _  \\  
@@ -71,7 +81,5 @@ httpsServer.listen(config.port, function () {
     logger.info('Connected to MongoDB URL', config.dbUrl)
     logger.info('Listening on port', config.port)
 })
-
-
 
 module.exports = app

@@ -4,7 +4,7 @@ MAINTAINER Even Haasted <even.haasted@nav.no>
 WORKDIR /src
 ADD ./dist .
 
-EXPOSE 8443
+EXPOSE 80
 
 ENV NODE_ENV=production
 ENV NODE_TLS_REJECT_UNAUTHORIZED=0
