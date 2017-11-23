@@ -7,7 +7,7 @@ node {
     def application = "sera"
     def dockerDir = "./docker"
     def distDir = "${dockerDir}/dist"
-    def currentVersion, nextVersion
+    def currentVersion, nextVersion, releaseVersion
 
 
     try {
