@@ -12,7 +12,7 @@ module.exports = {
     output: {
         path: path.join(__dirname, 'dist'),
         filename: 'sera.js',
-        publicPath: 'https://localhost/'
+        publicPath: 'https://localhost:8443/'
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin(),

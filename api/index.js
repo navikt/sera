@@ -10,11 +10,11 @@ const cors = function (req, res, next) {
     return next();
 };
 logger.debug("Overriding, 'Express' logger");
-app.use(require('morgan')('short', { stream: logger.stream }))
+app.use(require('morgan')('short', {stream: logger.stream}))
 
 app.use(cors)
 
-app.use(bodyParser.json({ type: '*/*', limit: '50mb' }))
+app.use(bodyParser.json({type: '*/*', limit: '50mb'}))
 require('./config/routes')(app)
 app.set('port', config.port)
 
@@ -33,27 +33,18 @@ const errorHandler = function (err, req, res, next) {
 app.use(logError)
 app.use(errorHandler)
 
-mongoose.Promise = require('bluebird')
-
-
 if (process.env.NODE_ENV === 'production') {
-    mongoose.connect(config.dbUrl, {
-        useMongoClient: true
-    })
+    mongoose.connect(config.dbUrl)
     mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
     console.log('Running SERA in production environment')
     console.log('Using MongoDB URL', config.dbUrl)
 } else if (process.env.NODE_ENV === 'development') {
-    mongoose.connect(config.dbUrl, {
-        useMongoClient: true
-    })
+    mongoose.connect(config.dbUrl)
     mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
     logger.info('Running SERA in development environment')
     logger.info('Using MongoDB URL', config.dbUrl)
 } else if (process.env.NODE_ENV === 'test') {
-    mongoose.connect(config.dbUrlTest, {
-        useMongoClient: true
-    })
+    mongoose.connect(config.dbUrlTest)
     mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
     logger.info('Running SERA in test environment')
     logger.info('Using MongoDB URL', config.dbUrlTest)
