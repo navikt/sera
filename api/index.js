@@ -4,15 +4,32 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const config = require('./config/config')
 const logger = require('./logger')
+const prometheus = require('prom-client')
+prometheus.collectDefaultMetrics()
 
 const cors = function (req, res, next) {
     res.setHeader("Access-Control-Allow-Origin", "*")
+    console.log("CORS")
     return next();
 };
 logger.debug("Overriding, 'Express' logger");
 app.use(require('morgan')('short', { stream: logger.stream }))
 
 app.use(cors)
+
+app.get("/isready", (req, res) => {
+    res.sendStatus(200)
+});
+
+app.get("/isalive", (req, res) => {
+    res.sendStatus(200)
+});
+
+app.get('/metrics', (req, res) => {
+    console.log("skjer det mpe her?")
+    res.set('Content-Type', prometheus.register.contentType);
+    res.end(prometheus.register.metrics());
+});
 
 app.use(bodyParser.json({ type: '*/*', limit: '50mb' }))
 require('./config/routes')(app)
@@ -49,6 +66,10 @@ if (process.env.NODE_ENV === 'production') {
     mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
     logger.info('Running SERA in development environment')
     logger.info('Using MongoDB URL', config.dbUrl)
+    logger.info('Using', config.fasitNodesUrl)
+    logger.info('Using', config.cocaUrl)
+    logger.info('Using', config.noraUrl)
+    logger.info('Using', config.influxUrl)
 } else if (process.env.NODE_ENV === 'test') {
     mongoose.connect(config.dbUrlTest, {
         useMongoClient: true

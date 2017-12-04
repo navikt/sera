@@ -9,7 +9,7 @@ const logger = require('./api/logger')
 const config = require('./api/config/config')
 const requestData = require('./api/controllers/refresh')
 const prometheus = require('prom-client')
-
+prometheus.collectDefaultMetrics()
 
 
 const app = new express();
@@ -66,7 +66,12 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, './dist/index.html'));
 })
 
-mongoose.connect(config.dbUrl, {server: {reconnectTries: Number.MAX_VALUE}}) // aldri gi opp reconnect
+mongoose.Promise = require('bluebird')
+
+mongoose.connect(config.dbUrl, {
+    useMongoClient: true,
+    reconnectTries: Number.MAX_VALUE
+})
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
 app.listen(config.port, function () {
     console.log(`
@@ -78,6 +83,10 @@ app.listen(config.port, function () {
         \\/         \\/         \\/         \\/ 
 `)
     logger.info('Running in production environment')
+    logger.info('Using', config.fasitNodesUrl)
+    logger.info('Using', config.cocaUrl)
+    logger.info('Using', config.noraUrl)
+    logger.info('Using', config.influxUrl)
     logger.info('Connected to MongoDB URL', config.dbUrl)
     logger.info('Listening on port', config.port)
 })

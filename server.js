@@ -29,21 +29,8 @@ app.use(require('webpack-dev-middleware')(compiler, serverOptions));
 app.use(require('webpack-hot-middleware')(compiler));
 app.use(express.static(__dirname + "/dist"));
 
-app.get("/isready", (req, res) => {
-    res.sendStatus(200)
-});
-
-app.get("/isalive", (req, res) => {
-    res.sendStatus(200)
-});
-
-app.get('/metrics', (req, res) => {
-    res.set('Content-Type', prometheus.register.contentType);
-    res.end(prometheus.register.metrics());
-});
-
-app.listen(config.port, function () {
-    logger.info('==> Up and running @ %s', config.port)
+app.listen(8080, function () {
+    logger.info('==> Up and running @ %s', 8080)
 });
 
 module.exports = app;

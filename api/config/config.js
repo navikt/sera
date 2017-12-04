@@ -4,15 +4,14 @@ const localVars = require('../../localvars')
 
 const config = {
     root: rootPath,
-    port: 80,
+    port: process.env['PORT'] || 80,
     dbUrlTest: 'mongodb://localhost:27017/test',
     dbUrl: process.env['SERADB_URL'] || localVars.dbUrl,
     dbUser: process.env['SERADB_USERNAME'] || localVars.dbUser,
     dbPassword: process.env['SERADB_PASSWORD'] || localVars.dbPassword,
     fasitNodesUrl: process.env['FASIT_NODES_V2_URL'] || 'https://fasit.adeo.no/api/v2/nodes',
-    cocaUrl: 'http://coca/api/v2/calculator/',
-    // noraUrl: process.env['units_v1_url'] || 'https://nora.adeo.no/api/v1/units',
-    noraUrl: 'http://nora/api/v1/units',
+    cocaUrl: process.env['COCA_URL'] || 'http://coca/api/v2/calculator/',
+    noraUrl: process.env['NORA_URL'] || 'http://nora/api/v1/units',
     influxUrl: process.env['INFLUXDB_URL'] || localVars.influxUrl,
     influxUser: process.env['INFLUXDB_USERNAME'] || localVars.influxUser,
     influxPassword: process.env['INFLUXDB_PASSWORD'] || localVars.influxPassword,

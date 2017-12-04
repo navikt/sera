@@ -37,7 +37,10 @@
       "env": {
         "NODE_PATH": "./",
         "NODE_ENV": "development",
-        "PORT": 80
+        "PORT": 80,
+        "NODE_TLS_REJECT_UNAUTHORIZED": 0,
+        "COCA_URL": "https://coca.nais.adeo.no/api/v2/calculator/",
+        "NORA_URL": "https://nora.nais.adeo.no/api/v1/units"
       }
     },
     "unittest": {
