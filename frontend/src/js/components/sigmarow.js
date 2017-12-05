@@ -42,7 +42,7 @@ export default class Sigmarow extends React.Component {
                                 return server.memory
                             }).reduce(summarize, 0))} GB</strong>
                         </td>
-                        <td className="text-center" width="80px">
+                        <td className="text-center" width="90px">
                             <strong id="disk">{Math.round(servers.map(function (server) {
                                 return server.disk
                             }).reduce(summarize, 0))} GB</strong>
