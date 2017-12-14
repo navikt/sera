@@ -21,6 +21,8 @@ fasitResources:
     resourceType: credential
   - alias: srvsera
     resourceType: credential
+  - alias: loadbalancer:sera
+    resourceType: LoadBalancerConfig
   exposed: 
   - alias: sera:servers_v1
     resourceType: restservice
