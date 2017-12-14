@@ -16,8 +16,6 @@ fasitResources:
   - alias: orcProdService
     resourceType: restservice
   - alias: influxdb
-    resourceType: baseUrl
-  - alias: influxdb
     resourceType: credential
   - alias: srvsera
     resourceType: credential
