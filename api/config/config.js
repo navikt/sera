@@ -12,7 +12,7 @@ const config = {
     fasitNodesUrl: process.env['FASIT_NODES_V2_URL'] || 'https://fasit.adeo.no/api/v2/nodes',
     cocaUrl: localVars.cocaUrl || 'http://coca/api/v2/calculator/',
     noraUrl: localVars.noraUrl || 'http://nora/api/v1/units',
-    influxUrl: process.env['INFLUXDB_URL'] || localVars.influxUrl,
+    influxUrl: 'http://influxdb.adeo.no:8086',
     influxUser: process.env['INFLUXDB_USERNAME'] || localVars.influxUser,
     influxPassword: process.env['INFLUXDB_PASSWORD'] || localVars.influxPassword,
     orchestratorUrl: process.env['ORCPRODSERVICE'] || 'https://orcprod.adeo.no:443/vco/api/',
