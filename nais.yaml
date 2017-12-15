@@ -22,7 +22,7 @@ fasitResources:
   - alias: loadbalancer:sera
     resourceType: LoadBalancerConfig
   - alias: extractAllVmInfo
-    resourcetype: ApplicationProperties
+    resourceType: ApplicationProperties
   exposed: 
   - alias: sera:servers_v1
     resourceType: restservice
