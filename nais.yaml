@@ -7,6 +7,13 @@ port: 80
 prometheus:
   enabled: true
   path: /metrics
+resources:
+  limits:
+    cpu: 500m
+    memory: 1024Mi
+  requests:
+    cpu: 250m
+    memory: 512Mi
 fasitResources:
   used:
   - alias: seraDb
