@@ -40,7 +40,7 @@ node {
                 sh "npm install && npm run build || exit 1"
                 // copying files to docker image
                 sh "mkdir -p ${distDir}"
-                sh "cp -r production_server.js app.js package.json dist api app-config ${distDir}"
+                sh "cp -r production_server.js app.js package.json dist api ${distDir}"
                 // workaround for local variables being required production environment
                 sh "echo {} > ${distDir}/localvars.json"
                 // getting modules for production
