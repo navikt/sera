@@ -9,7 +9,6 @@ prometheus.collectDefaultMetrics()
 
 const cors = function (req, res, next) {
     res.setHeader("Access-Control-Allow-Origin", "*")
-    console.log("CORS")
     return next();
 };
 logger.debug("Overriding, 'Express' logger");
@@ -26,7 +25,6 @@ app.get("/isalive", (req, res) => {
 });
 
 app.get('/metrics', (req, res) => {
-    console.log("skjer det mpe her?")
     res.set('Content-Type', prometheus.register.contentType);
     res.end(prometheus.register.metrics());
 });

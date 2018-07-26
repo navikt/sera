@@ -1,220 +1,111 @@
-const request = require('request')
-const _ = require('lodash')
-const jsonToCSV = require('json-csv')
-const mongoose = require('mongoose')
-const ServerMongoModel = require('../models/servermongo')
-const ServerDefinition = require('../models/server')
-const timestamp = require('../controllers/timestamp')
-const influx = require('./influx')
-const mongo = require('./mongo')
-const config = require('../config/config')
+const {createFields, removeKeys, validator} = require('./common')
+const {enrichWithFasitData} = require('./sources/fasit')
+const {enrichWithCocaData} = require('./sources/coca')
+const {enrichWithNoraData} = require('./sources/nora')
+const {enrichWithInfluxData} = require('./sources/influx')
+const serverDefinition = require('../models/serverDefinition2')
+const {ServerMongoSchema} = require('../models/serverMongoSchema')
 const logger = require('../logger')
 
 
-exports.registerServers = function () {
-    return function (req, res, next) {
-        var validation = schemaValidateRequest(req.body)
-        if (validation.errors.length > 0) {
-            return res.status(400).send('JSON schema validation failed with the following errors: ' + validation.errors)
+exports.postServers = () => {
+    return async (req, res) => {
+        try {
+            const {body} = req
+            logger.info(`Received payload...`)
+            const validation = validator(body, serverDefinition)
+            if (!validation.valid) {
+                logger.error('POST: JSON validation failed:', validation)
+                res.status(422).json(validation)
+                return null
+            }
+            logger.info(`Verified ${body.length} elements`)
+            let servers = await enrichWithFasitData(body)
+            logger.info(`Enriched elements with data from Fasit: ${servers.length}`)
+            servers = await enrichWithCocaData(servers)
+            logger.info(`Enriched elements with data from Coca: ${servers.length}`)
+            servers = await enrichWithNoraData(servers)
+            logger.info(`Enriched elements with data from Nora: ${servers.length}`)
+            servers = await enrichWithInfluxData(servers)
+            logger.info(`Enriched elements with data from InfluxDB: ${servers.length}`)
+            ServerMongoSchema.remove({}, err => {
+                if (err) throw err
+                else {
+                    logger.info(`Cleared database...`)
+                    let serverSchema = new ServerMongoSchema()
+                    servers.forEach(e => serverSchema.items.push(e))
+                    serverSchema.save(err => {
+                        if (err) throw err
+                    })
+                    logger.info(`${serverSchema.items.length} elements written to database`)
+                    res.status(201).send(`${serverSchema.items.length} elements written to database`)
+                }
+            })
+        } catch (err) {
+            logger.error(err)
+            res.status(500).send(err)
         }
-        logger.info("Received elements in request: ", req.body.length)
-        enrichElements(req.body, res)
     }
 }
 
-exports.getServers = function () {
-    return function (req, res, next) {
-        ServerMongoModel.find(createMongoQueryFromRequest(req.query), function (err, servers) {
-            if (err) return next(err)
-
-            servers = JSON.parse(JSON.stringify(servers)) // doc -> json
-
-            if (req.query.csv === 'true') {
-                returnCSVPayload(servers, res)
-            } else {
-                res.header('Content-Type', 'application/json; charset=utf-8')
-                res.json(servers)
+exports.getServers = () => {
+    return (req, res) => {
+        ServerMongoSchema.find((err, servers) => {
+            if (err) throw err
+            else {
+                logger.info(`Retrieved ${servers[0].items.length} elements from database`)
+                res.status(200).send(servers[0].items)
+                convertToCsv(servers[0].items.toObject())
             }
         })
     }
 }
 
-var schemaValidateRequest = function (request) {
-    var validate = require('jsonschema').validate
-    var ServerJsonSchema = require('../models/serverschema')
-    return validate(request, ServerJsonSchema)
+const convertToCsv = async (items) => {
+    const servers = removeKeys(items, ['_id'])
+    const fields = getFieldsFromArr(servers)
+    const csv = generateCSV(servers, fields)
 }
 
-function enrichElements(incomingDataElements, incomingDataResponse) {
-    incomingDataElements.forEach(function (incomingDataElement) {
-        if (incomingDataElement.Notes2) {
-            incomingDataElement.notes = incomingDataElement.Notes2 // change key Notes to notes
-            delete incomingDataElement.Notes2
-        } else if (incomingDataElement.Notes) {
-            incomingDataElement.notes = incomingDataElement.Notes // change key Notes2 to notes
-            delete incomingDataElement.Notes
-        }
+const getFieldsFromArr = (arr) => {
+    let fields = []
+    arr.forEach((e, i) => {
+        const keys = createFields(e)
+        keys.forEach(element => {
+            if (!fields.includes(element)) fields.push(element)
+        })
     })
+    return fields
+}
 
-    // Requesting all Node elements from Fasit
-    request({url: config.fasitNodesUrl, headers: {'Accept': 'application/json'}}, function (err, res, body) {
-        if (err) {
-            return console.error("Unable to retrieve data from Fasit", err)
-        } else {
-            var fasitData = JSON.parse(body)
-            logger.info("Got data from fasit")
-
-            var fasitEnrichedElements = incomingDataElements.map(function (incomingDataElement) {
-                var fasitElement = fasitData.filter(function (fasitElement) {
-                    return fasitElement.hostname === incomingDataElement.hostname
+const generateCSV = (items, fields) => {
+    // Create CSV header
+    fields.splice(0, 1)
+    fields.sort()
+    fields.unshift('hostname')
+    let csv = ''
+    fields.forEach((e, i) => {
+        if (i < fields.length - 1) csv += '"' + e + '"' + ','
+        else csv += '"' + e + '"' + '\n'
+    })
+    // Create CSV rows
+    items.forEach(e => {
+        fields.forEach(field => {
+            if (field.match(/([\w]+\.)+[\w]+(?=[\s]|$)/)) {
+                const keys = field.split('.')
+                let objectKey = e
+                keys.forEach(key => {
+                    objectKey = objectKey[key]
                 })
-                if (!(fasitElement.length == 0)) {
-                    incomingDataElement.application = fasitElement[0].applicationMappingName;
-                    incomingDataElement.environmentName = fasitElement[0].environmentName;
-                    return incomingDataElement
-                } else if (!incomingDataElement.application) {
-                    incomingDataElement.application = "n/a"
-                } else if (!incomingDataElement.environmentName) {
-                    incomingDataElement.environmentName = "n/a"
-                }
-                return incomingDataElement
-            })
-            logger.info("Enriched elements with data from Fasit: ", fasitEnrichedElements.length)
-
-            // Requesting calculations for all items from Coca
-            var cocaRequestData = buildCocaRequest(fasitEnrichedElements)
-
-            request({
-                method: "POST",
-                url: config.cocaUrl,
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(cocaRequestData)
-            }, function (err, res, body) {
-                if (err) {
-                    return logger.error("Unable to retrieve data from Coca", err)
-                } else {
-                    logger.info("Got data from Coca")
-                    var cocaData = JSON.parse(body)
-                    var cocaEnrichedElements = fasitEnrichedElements.map(function (fasitEnrichedElement, index) {
-                        fasitEnrichedElement.calculations = cocaData[index].calculations
-                        return fasitEnrichedElement
-                    })
-                    logger.info("Enriched elements with data from Coca: ", cocaEnrichedElements.length)
-
-                    // Requesting Application to Organization mapping from NORA
-                    request({url: config.noraUrl, headers: {'Accept': 'application/json'}}, function (err, res, body) {
-                        if (err) {
-                            return logger.error("Unable to retrieve data from Nora", err)
-                        } else {
-                            logger.info("Got data from Nora")
-                            var units = JSON.parse(body)
-                            var noraEnrichedElements = cocaEnrichedElements.map(function (cocaEnrichedElement) {
-                                var application = cocaEnrichedElement.application
-                                if (!application) {
-                                    cocaEnrichedElement.unit = 'n/a'
-                                    return cocaEnrichedElement
-                                }
-                                units.forEach(function (unit) {
-                                    if (unit.applications.indexOf(application) > -1) {
-                                        cocaEnrichedElement.unit = unit.name
-                                        return cocaEnrichedElement
-                                    }
-                                })
-                                return cocaEnrichedElement
-                            });
-                            logger.info("Enriched elements with data from Nora: ", noraEnrichedElements.length)
-                            influx.fetchData(noraEnrichedElements, mongo.updateDatabase, incomingDataResponse)
-                       }
-                    })
-                }
-            })
-        }
-    })
-}
-var buildCocaRequest = function (elements) {
-    var returnTypeFromOS = function (os) {
-        if (os.match(/2008/g)) {
-            return 'win2008'
-        } else if (os.match(/2012/g)) {
-            return 'win2012'
-        } else if (os.match(/red hat/g || os.match(/rhel/g))) {
-            return 'rhel6'
-        } else {
-            return 'appliance'
-        }
-    };
-    return elements.map(function (element) {
-        var costElement = {}
-        costElement.cpu = element.cpu;
-        costElement.memory = element.memory;
-        costElement.environment = element.environmentClass;
-        var validTypes = ['jboss', 'was', 'was_dmgr', 'bpm', 'bpm_dmgr', 'liberty', 'wildfly']
-        if (_.contains(validTypes, element.type)) {
-            costElement.type = element.type;
-        } else {
-            costElement.type = returnTypeFromOS(element.os)
-        }
-
-        if (element.custom) {
-            costElement.classification = "custom";
-        } else {
-            costElement.classification = "standard";
-        }
-
-        var itcamEnvironments = ['p', 'q0', 'q1', 'q3', 't3']
-        if (_.contains(itcamEnvironments, element.environmentName)) {
-            costElement.scapm = true
-        }
-        return costElement
-
-
-    })
-}
-
-var returnCSVPayload = function (servers, res) {
-    // dynamically create CSV mapping object (csv-header) based on js-object
-    var createCSVMapping = function (servers) {
-        var mappingObjectArray = []
-        var createMappingObject = function (item, parentKey) {
-            for (var key in item) {
-                if (typeof item[key] === 'object') {
-                    return createMappingObject(item[key], key);
-                }
-                let fieldName = key.toString()
-                if(parentKey != null ){ fieldName = parentKey + "." + fieldName}
-                mappingObjectArray.push({name: fieldName, label: fieldName})
-            }
-            return mappingObjectArray
-        }
-
-        return {fields: createMappingObject(servers[0])}
-    }
-
-    jsonToCSV.csvBuffered(servers, createCSVMapping(servers), function (err, csv) {
-        if (err) {
-            res.statusCode = 500
-            throw new Error(err)
-        }
-        res.header('Content-Type', 'text/plain; charset=utf-8')
-        res.send(csv)
-    })
-}
-
-var createMongoQueryFromRequest = function (request) {
-    var query = {}
-
-    for (var queryParam in request) {
-        if (queryParam in ServerDefinition) {
-            if (ServerDefinition[queryParam].type === Number) {
-                query[queryParam] = request[queryParam]
+                if (!objectKey) csv += '"n/a"' + ','
+                else csv += '"' + objectKey + '"' + ','
             } else {
-                query[queryParam] = new RegExp(request[queryParam], 'i')
+                if (!e[field]) csv += '"n/a"' + ','
+                else csv += '"' + e[field] + '"' + ','
             }
-        } else {
-            continue
-        }
-    }
-
-    return query
+        })
+        csv = csv.substring(0, csv.length - 1)
+        csv += '\n'
+    })
+    return csv
 }
-

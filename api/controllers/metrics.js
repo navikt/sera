@@ -1,17 +1,16 @@
 const _ = require('lodash')
-const Server = require('../models/servermongo')
 
-exports.getMetrics = function () {
-    return function (req, res, next) {
-        Server.find({}, function (err, servers) {
-            res.json({
-                servers: {
-                    count: servers.length
-                }
-            })
-        })
-    }
-}
+// exports.getMetrics = function () {
+//     return function (req, res, next) {
+//         Server.find({}, function (err, servers) {
+//             res.json({
+//                 servers: {
+//                     count: servers.length
+//                 }
+//             })
+//         })
+//     }
+// }
 
 exports.isAlive = function(){
     return function (req, res, next) {

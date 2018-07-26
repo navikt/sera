@@ -1,6 +1,6 @@
 const path = require('path')
 const rootPath = path.normalize(__dirname + '/..')
-const localVars = require('../../localvars')
+const localVars = require('../../localvars.json')
 
 const config = {
     root: rootPath,
