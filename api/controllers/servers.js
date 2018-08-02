@@ -3,7 +3,7 @@ const {enrichWithFasitData} = require('./sources/fasit')
 const {enrichWithCocaData} = require('./sources/coca')
 const {enrichWithNoraData} = require('./sources/nora')
 const {enrichWithInfluxData} = require('./sources/influx')
-const serverDefinition = require('../models/serverDefinition2')
+const serverDefinition = require('../models/serverDefinition')
 const {ServerMongoSchema} = require('../models/serverMongoSchema')
 const logger = require('../logger')
 

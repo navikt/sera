@@ -46,7 +46,7 @@ module.exports = {
         created: {
             type: 'string'
         },
-        notes: {
+        Notes: {
             type: 'string'
         },
     },
