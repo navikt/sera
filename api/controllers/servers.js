@@ -5,6 +5,7 @@ const {enrichWithNoraData} = require('./sources/nora')
 const {enrichWithInfluxData} = require('./sources/influx')
 const serverDefinition = require('../models/serverDefinition')
 const {ServerMongoSchema} = require('../models/serverMongoSchema')
+const {TimestampMongoSchema} = require('../models/timestampMongoSchema')
 const logger = require('../logger')
 
 
@@ -32,13 +33,22 @@ exports.postServers = () => {
                 if (err) throw err
                 else {
                     logger.info(`Cleared database...`)
-                    let serverSchema = new ServerMongoSchema()
-                    servers.forEach(e => serverSchema.items.push(e))
-                    serverSchema.save(err => {
+                    ServerMongoSchema.collection.insert(servers, (err, docs) => {
                         if (err) throw err
+                        else {
+                            logger.info(`${docs.ops.length} elements written to database`)
+                            TimestampMongoSchema.remove({}, err => {
+                                logger.info('Timestamp cleared')
+                                if (err) throw err
+                                else {
+                                    timestampSchema = new TimestampMongoSchema()
+                                    timestampSchema.save()
+                                    logger.info('New timestamp set')
+                                    res.status(201).send(`${docs.ops.length} elements written to database`)
+                                }
+                            })
+                        }
                     })
-                    logger.info(`${serverSchema.items.length} elements written to database`)
-                    res.status(201).send(`${serverSchema.items.length} elements written to database`)
                 }
             })
         } catch (err) {
@@ -50,12 +60,26 @@ exports.postServers = () => {
 
 exports.getServers = () => {
     return (req, res) => {
-        ServerMongoSchema.find((err, servers) => {
-            if (err) throw err
-            else {
-                logger.info(`Retrieved ${servers[0].items.length} elements from database`)
-                res.status(200).send(servers[0].items)
+        try {
+            if (Object.keys(req.query).length > 0) {
+                console.log(req.query)
+                ServerMongoSchema.find(req.query, (err, servers) => {
+                    if (err) throw err
+                    logger.info(`Retrieved ${servers.length} elements from database based on query`)
+                    res.status(200).send(servers)
+                })
+            } else {
+                ServerMongoSchema.find((err, servers) => {
+                    if (err) throw err
+                    else {
+                        logger.info(`Retrieved ${servers.length} elements from database`)
+                        res.status(200).send(servers)
+                    }
+                })
             }
-        })
+        } catch (err) {
+            logger.error(err)
+            res.status(500).send(err)
+        }
     }
 }

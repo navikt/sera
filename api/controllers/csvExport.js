@@ -9,11 +9,11 @@ exports.getCSV = () => {
             ServerMongoSchema.find((err, servers) => {
                 if (err) throw err
                 else {
-                    logger.info(`Retrieved ${servers[0].items.length} elements from database`)
-                    const csv = convertToCsv(servers[0].items.toObject())
+                    logger.info(`Retrieved ${servers.length} elements from database`)
+                    const csv = convertToCsv(servers)
                     res.status(200).send(csv)
                 }
-            })
+            }).lean()
         }
         catch (err) {
             logger.error(err)

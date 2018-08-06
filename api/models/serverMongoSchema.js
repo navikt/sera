@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 
 
-const ServerSchema = new mongoose.Schema({
-    items: [{
+const ServerSchema = new mongoose.Schema(
+    {
         hostname: {type: String},
         os: {type: String},
         environmentClass: {type: String},
@@ -23,9 +23,8 @@ const ServerSchema = new mongoose.Schema({
         unit: {type: String, default: 'n/a'},
         rpm_rpm: {type: String, default: 'n/a'},
         rpm_version: {type: String, default: 'n/a'},
-        rpm_time: {type: String, default: 'n/a'},
-    }],
-    timestamp: {type: Date, default: Date.now}
-})
+        rpm_time: {type: String, default: 'n/a'}
+    }
+)
 
 exports.ServerMongoSchema = mongoose.model('Server', ServerSchema)
