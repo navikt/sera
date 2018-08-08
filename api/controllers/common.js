@@ -46,6 +46,7 @@ exports.createFields = (item) => {
     let fields = []
     const createFields = (item, parent) => {
         Object.keys(item).forEach(key => {
+            if (!item[key]) item[key] = 'n/a'
             if (typeof(item[key]) === 'object') return createFields(item[key], key)
             else parent ? fields.push(parent + '.' + key) : fields.push(key)
         })
@@ -57,6 +58,7 @@ exports.createFields = (item) => {
 
 exports.removeKeys = (item, keys) => {
     const removeKeys = (item, keys) => {
+        if (!item) item = {}
         let obj = item
         Object.keys(item).forEach(key => {
             keys.forEach(e => {

@@ -62,7 +62,6 @@ exports.getServers = () => {
     return (req, res) => {
         try {
             if (Object.keys(req.query).length > 0) {
-                console.log(req.query)
                 ServerMongoSchema.find(req.query, (err, servers) => {
                     if (err) throw err
                     logger.info(`Retrieved ${servers.length} elements from database based on query`)
