@@ -1,0 +1,149 @@
+{
+  "name": "sera",
+  "description": "server information application",
+  "version": "312.0.0",
+  "url": "http://sera.adeo.no",
+  "repository": {
+    "type": "git",
+    "url": "http://stash.devillo.no/scm/aura/sera.git"
+  },
+  "author": {
+    "name": "Even Haasted",
+    "email": "even.haasted@nav.no"
+  },
+  "scripts": {
+    "start": "better-npm-run start",
+    "build": "better-npm-run build",
+    "dev": "better-npm-run dev",
+    "unittest": "better-npm-run unittest",
+    "integrationtest": "better-npm-run integrationtest"
+  },
+  "betterScripts": {
+    "start": {
+      "command": "node production_server.js",
+      "env": {
+        "NODE_ENV": "production",
+        "NODE_TLS_REJECT_UNAUTHORIZED": 0
+      }
+    },
+    "build": {
+      "command": "better-npm-run clean && better-npm-run mkdir && better-npm-run copy-html && better-npm-run copy-images && better-npm-run copy-favicon && webpack --display-error-details --config webpack.config.prod.js",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    "dev": {
+      "command": "better-npm-run clean && better-npm-run mkdir && better-npm-run copy-html && better-npm-run copy-images && better-npm-run copy-favicon && nodemon server.js",
+      "env": {
+        "NODE_PATH": "./",
+        "NODE_ENV": "development",
+        "PORT": 80,
+        "NODE_TLS_REJECT_UNAUTHORIZED": 0,
+        "COCA_URL": "https://coca.nais.adeo.no/api/v2/calculator/",
+        "NORA_URL": "https://nora.nais.adeo.no/api/v1/units"
+      }
+    },
+    "unittest": {
+      "command": "mocha --compilers js:babel-register --recursive ./test/components ./test/logic --timeout 5000 --no-deprecation",
+      "env": {
+        "NODE_ENV": "test"
+      }
+    },
+    "integrationtest": {
+      "command": "mocha --compilers js:babel-register --recursive ./test/integration --timeout 5000 --no-deprecation",
+      "env": {
+        "NODE_ENV": "test",
+        "NODE_TLS_REJECT_UNAUTHORIZED": 0
+      }
+    },
+    "clean": {
+      "command": "rimraf dist/*"
+    },
+    "mkdir": {
+      "command": "mkdirp dist/"
+    },
+    "copy-html": {
+      "command": "ncp frontend/src/index.html dist/index.html"
+    },
+    "copy-images": {
+      "command": "ncp frontend/src/images/ dist/images/"
+    },
+    "copy-favicon": {
+      "command": "ncp frontend/src/favicon.png/ dist/favicon.png/"
+    },
+    "copy-fonts": {
+      "command": "ncp frontend/src/fonts/ dist/fonts/"
+    },
+    "prebuild": {
+      "command": "better-npm-run clean && better-npm-run mkdir && better-npm-run copy-html && better-npm-run copy-images && better-npm-run copy-fonts && node server.js"
+    }
+  },
+  "engines": {
+    "node": ">= 0.12.7"
+  },
+  "dependencies": {
+    "ajv": "^6.5.1",
+    "async": "^2.3.0",
+    "bluebird": "^3.5.1",
+    "body-parser": "^1.13.3",
+    "express": "^4.13.3",
+    "jsonschema": "^1.0.2",
+    "mongoose": "^4.1.3",
+    "morgan": "^1.6.1",
+    "node-fetch": "^2.1.2",
+    "prom-client": "^10.2.2",
+    "request": "^2.87.0",
+    "winston": "^2.3.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^6.2.10",
+    "babel-polyfill": "^6.20.0",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-react": "^6.16.0",
+    "babel-preset-react-hmre": "^1.1.1",
+    "babel-register": "^6.18.0",
+    "better-npm-run": "0.0.15",
+    "bootstrap": "^3.3.7",
+    "browserify": "14.3.0",
+    "chai": "^3.5.0",
+    "chai-http": "^3.0.0",
+    "chance": "^1.0.6",
+    "console-shim": "1.0.3",
+    "css-loader": "^0.28.0",
+    "del": "2.2.2",
+    "enzyme": "^2.7.1",
+    "es6-promise": "^4.1.0",
+    "fetch-mock": "^5.9.4",
+    "file-loader": "^0.11.1",
+    "font-awesome": "4.7.0",
+    "isomorphic-fetch": "^2.2.1",
+    "jsdom": "^9.12.0",
+    "jsdom-global": "2.1.1",
+    "less": "^2.7.1",
+    "less-loader": "^4.0.3",
+    "less-plugin-clean-css": "^1.5.1",
+    "mkdirp": "^0.5.1",
+    "mocha": "^3.2.0",
+    "moment": "^2.22.2",
+    "ncp": "^2.0.0",
+    "nock": "^9.0.2",
+    "node-uuid": "1.4.8",
+    "nodemon": "^1.11.0",
+    "prop-types": "^15.5.7",
+    "react": "^15.4.2",
+    "react-addons-test-utils": "^15.4.2",
+    "react-bootstrap": "^0.30.7",
+    "react-bootstrap-table": "^3.2.2",
+    "react-dom": "^15.4.2",
+    "reactify": "1.1.1",
+    "rimraf": "^2.5.4",
+    "sinon": "^2.1.0",
+    "style-loader": "^0.16.1",
+    "url-loader": "^0.5.7",
+    "webpack": "^2.3.3",
+    "webpack-dev-middleware": "^1.9.0",
+    "webpack-hot-middleware": "^2.13.2"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,37 @@
+name: sera
+replicas:
+    min: 1
+    max: 1
+    cpuThresholdPercentage: 50
+port: 80
+prometheus:
+  enabled: true
+  path: /metrics
+resources:
+  limits:
+    cpu: 1000m
+    memory: 2048Mi
+  requests:
+    cpu: 250m
+    memory: 512Mi
+fasitResources:
+  used:
+  - alias: seraDb
+    resourceType: DataSource
+  - alias: fasit:nodes_v2
+    resourceType: restservice
+  - alias: orcProdService
+    resourceType: restservice
+  - alias: influxdb
+    resourceType: credential
+  - alias: srvsera
+    resourceType: credential
+  - alias: loadbalancer:sera
+    resourceType: LoadBalancerConfig
+  - alias: extractAllVmInfo
+    resourceType: ApplicationProperties
+  exposed: 
+  - alias: sera:servers_v1
+    resourceType: restservice
+    path: /api/v1/servers
+    
