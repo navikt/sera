@@ -13,7 +13,7 @@ node {
     try {
         stage("checkout") {
             git credentialsId: 'navikt-ci',
-                git url: "https://github.com/navikt/${application}.git"
+                url: "https://github.com/navikt/${application}.git"
         
             }
 
