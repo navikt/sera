@@ -23,8 +23,9 @@ exports.postServers = () => {
             logger.info(`Verified ${body.length} elements`)
             let servers = await enrichWithFasitData(body)
             logger.info(`Enriched elements with data from Fasit: ${servers.length}`)
-            servers = await enrichWithCocaData(servers)
-            logger.info(`Enriched elements with data from Coca: ${servers.length}`)
+            // Coca skrudd av.
+            // servers = await enrichWithCocaData(servers)
+            // logger.info(`Enriched elements with data from Coca: ${servers.length}`)
             servers = await enrichWithNoraData(servers)
             logger.info(`Enriched elements with data from Nora: ${servers.length}`)
             servers = await enrichWithInfluxData(servers)
