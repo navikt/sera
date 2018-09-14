@@ -12,7 +12,8 @@ node {
 
     try {
         stage("checkout") {
-                git url: "ssh://git@stash.devillo.no:7999/aura/${application}.git"
+            git credentialsId: 'navikt-ci',
+                git url: "http://github.com/navikt/${application}.git"
         
             }
 
