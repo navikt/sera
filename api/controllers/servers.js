@@ -1,6 +1,6 @@
-const {createFields, removeKeys, validator} = require('./common')
+const {validator, removeDuplicates} = require('./common')
 const {enrichWithFasitData} = require('./sources/fasit')
-const {enrichWithCocaData} = require('./sources/coca')
+// const {enrichWithCocaData} = require('./sources/coca')
 const {enrichWithNoraData} = require('./sources/nora')
 const {enrichWithInfluxData} = require('./sources/influx')
 const serverDefinition = require('../models/serverDefinition')
@@ -20,8 +20,9 @@ exports.postServers = () => {
                 res.status(422).json(validation)
                 return null
             }
-            logger.info(`Verified ${body.length} elements`)
-            let servers = await enrichWithFasitData(body)
+            let servers = removeDuplicates(body)
+            logger.info(`Verified ${servers.length} elements`)
+            servers = await enrichWithFasitData(servers)
             logger.info(`Enriched elements with data from Fasit: ${servers.length}`)
             // Coca skrudd av.
             // servers = await enrichWithCocaData(servers)

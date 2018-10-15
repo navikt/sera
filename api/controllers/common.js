@@ -1,5 +1,6 @@
 const Ajv = require('ajv')
 const fetch = require('node-fetch')
+const logger = require('../logger')
 
 
 exports.validator = (data, definition) => {
@@ -69,4 +70,24 @@ exports.removeKeys = (item, keys) => {
         return obj
     }
     return removeKeys(item, keys)
+}
+
+exports.removeDuplicates = (arr) => {
+    let matches = 0
+    let uniq = new Set()
+    let uniqObjArr = []
+    arr.forEach(e => {
+        uniq.add(e.hostname)
+    })
+    const uniqArr = [...uniq]
+    for (let i in arr) {
+        if (uniqArr[matches] === arr[i].hostname) {
+            uniqObjArr.push(arr[i])
+            matches++
+        } else {
+            logger.warn("Found and removed ruplicate server object in import data: " + arr[i].hostname)
+        }
+
+    }
+    return uniqObjArr
 }
