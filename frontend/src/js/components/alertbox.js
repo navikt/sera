@@ -9,7 +9,7 @@ export default class AlertBox extends React.Component {
                 </div>
                 <div className="alert-text">
                     <strong>Obs!</strong><br />
-                    Gammal drit i databasen, kontakt noen som kan fikse sånt.
+                    Import av serverdata fra vCenter har feilet og informasjonen kan være feil. Kontakt AURA.
                 </div>
                 <div>
                     <button

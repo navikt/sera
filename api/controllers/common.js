@@ -85,7 +85,7 @@ exports.removeDuplicates = (arr) => {
             uniqObjArr.push(arr[i])
             matches++
         } else {
-            logger.warn("Found and removed ruplicate server object in import data: " + arr[i].hostname)
+            logger.warn("Found and removed duplicate server object in import data: " + arr[i].hostname)
         }
 
     }
