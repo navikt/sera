@@ -50,5 +50,5 @@ module.exports = {
             type: 'string'
         },
     },
-    additionalProperties: false
+    additionalProperties: true
 }
