@@ -9,23 +9,18 @@ node {
     def distDir = "${dockerDir}/dist"
     def nextVersion, releaseVersion
 
-
     try {
         stage("checkout") {
-            git credentialsId: 'navikt-ci',
-                url: "https://github.com/navikt/${application}.git"
-        
-            }
+            git url: "https://github.com/navikt/${application}.git"
+        }
 
         stage("initialize") {
             npm = "/usr/bin/npm"
             node = "/usr/bin/node"
 			changelog = sh(script: 'git log `git describe --tags --abbrev=0`..HEAD --oneline', returnStdout: true)
-            releaseVersion = sh(script: 'npm version major | cut -d"v" -f2', returnStdout: true).trim()
-             // aborts pipeline if releaseVersion already is released
-             sh "if [ \$(curl -s -o /dev/null -I -w \"%{http_code}\" http://maven.adeo.no/m2internal/no/nav/aura/${application}/${application}/${releaseVersion}) != 404 ]; then echo \"this version is somehow already released, manually update to a unreleased SNAPSHOT version\"; exit 1; fi"
-             committer = sh(script: 'git log -1 --pretty=format:"%ae (%an)"', returnStdout: true).trim()
-             committerEmail = sh(script: 'git log -1 --pretty=format:"%ae"', returnStdout: true).trim()
+            releaseVersion = sh(script: 'echo $(date "+%Y-%m-%d")-$(git --no-pager log -1 --pretty=%h)', returnStdout: true).trim()
+            committer = sh(script: 'git log -1 --pretty=format:"%ae (%an)"', returnStdout: true).trim()
+            committerEmail = sh(script: 'git log -1 --pretty=format:"%ae"', returnStdout: true).trim()
         }
         
         stage("run unit tests") {
@@ -62,16 +57,6 @@ node {
                  }
            	}
 
-        stage("set version") {
-             withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'navikt-ci', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-                withEnv(['HTTPS_PROXY=http://webproxy-utvikler.nav.no:8088', 'NO_PROXY=adeo.no']) {
-                    sh "git tag -a ${application}-${releaseVersion} -m '${application}-${releaseVersion}'"
-                    sh "git push  --set-upstream https://${USERNAME}:${PASSWORD}@github.com/navikt/sera.git --tags"
-                    sh "git push  --set-upstream https://${USERNAME}:${PASSWORD}@github.com/navikt/sera.git master"
-                }
-             }
-        }
-
         stage("deploy to !prod") {
                 withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'srvauraautodeploy', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
                     sh "curl -k -d \'{\"application\": \"${application}\", \"version\": \"${releaseVersion}\", \"fasitEnvironment\": \"q1\", \"zone\": \"fss\", \"namespace\": \"default\", \"fasitUsername\": \"${env.USERNAME}\", \"fasitPassword\": \"${env.PASSWORD}\"}\' https://daemon.nais.preprod.local/deploy"
@@ -106,11 +91,5 @@ node {
         }
         slackSend channel: '#nais-ci', message: ":shit: Failed deploying ${application}:${releaseVersion}: ${e.getMessage()}. See log for more info ${env.BUILD_URL}", teamDomain: 'nav-it', tokenCredentialId: 'slack_fasit_frontend'
         throw e
-    } finally {
-        step([$class       : 'InfluxDbPublisher',
-              customData   : null,
-              customDataMap: null,
-              customPrefix : null,
-              target       : 'influxDB'])
-    }
+    } 
 }
